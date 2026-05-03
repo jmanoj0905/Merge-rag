@@ -34,6 +34,10 @@ pnpm-debug.log*
 *.pem
 *.key
 
+# Local project planning notes
+AGENT.md
+PROJECT_BRIEF.md
+
 # Local data and generated artifacts
 data/raw/
 data/processed/
@@ -59,4 +63,3 @@ docker-compose.override.yml
 Thumbs.db
 .idea/
 .vscode/
-
