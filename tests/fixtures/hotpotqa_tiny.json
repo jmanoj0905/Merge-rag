@@ -1,0 +1,137 @@
+[
+  {
+    "_id": "q1_python_country",
+    "question": "In what country was the programming language Python created?",
+    "answer": "Netherlands",
+    "type": "bridge",
+    "level": "easy",
+    "supporting_facts": [
+      ["Python (programming language)", 1],
+      ["Guido van Rossum", 1]
+    ],
+    "context": [
+      [
+        "Python (programming language)",
+        [
+          "Python is a high-level, general-purpose programming language.",
+          "It was created by Guido van Rossum and first released in 1991."
+        ]
+      ],
+      [
+        "Guido van Rossum",
+        [
+          "Guido van Rossum is a Dutch programmer best known for creating Python.",
+          "He was born on January 31, 1956, in Haarlem, Netherlands."
+        ]
+      ]
+    ]
+  },
+  {
+    "_id": "q2_nolan_kubrick",
+    "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+    "answer": "no",
+    "type": "comparison",
+    "level": "easy",
+    "supporting_facts": [
+      ["Christopher Nolan", 0],
+      ["Stanley Kubrick", 0]
+    ],
+    "context": [
+      [
+        "Christopher Nolan",
+        [
+          "Christopher Nolan is a British-American film director and screenwriter.",
+          "He was born in London, England, and holds dual British and American citizenship."
+        ]
+      ],
+      [
+        "Stanley Kubrick",
+        [
+          "Stanley Kubrick was an American film director, screenwriter, and producer.",
+          "He was born on July 26, 1928, in The Bronx, New York, United States."
+        ]
+      ]
+    ]
+  },
+  {
+    "_id": "q3_wikipedia_founder",
+    "question": "In what city was the founder of Wikipedia born?",
+    "answer": "Huntsville",
+    "type": "bridge",
+    "level": "easy",
+    "supporting_facts": [
+      ["Wikipedia", 1],
+      ["Jimmy Wales", 1]
+    ],
+    "context": [
+      [
+        "Wikipedia",
+        [
+          "Wikipedia is a free online encyclopedia written and maintained by volunteers.",
+          "It was co-founded by Jimmy Wales and Larry Sanger in January 2001."
+        ]
+      ],
+      [
+        "Jimmy Wales",
+        [
+          "Jimmy Donal Wales is an American internet entrepreneur and former financial trader.",
+          "He was born on August 7, 1966, in Huntsville, Alabama, United States."
+        ]
+      ]
+    ]
+  },
+  {
+    "_id": "q4_iphone_ceo",
+    "question": "Who is the CEO of the company that makes the iPhone?",
+    "answer": "Tim Cook",
+    "type": "bridge",
+    "level": "easy",
+    "supporting_facts": [
+      ["iPhone", 0],
+      ["Apple Inc.", 1]
+    ],
+    "context": [
+      [
+        "iPhone",
+        [
+          "The iPhone is a line of smartphones designed and marketed by Apple Inc.",
+          "The first iPhone was unveiled by Steve Jobs on January 9, 2007."
+        ]
+      ],
+      [
+        "Apple Inc.",
+        [
+          "Apple Inc. is an American multinational technology company headquartered in Cupertino, California.",
+          "Tim Cook has served as the CEO of Apple since August 2011."
+        ]
+      ]
+    ]
+  },
+  {
+    "_id": "q5_eiffel_language",
+    "question": "What language is spoken in the country where the Eiffel Tower is located?",
+    "answer": "French",
+    "type": "bridge",
+    "level": "easy",
+    "supporting_facts": [
+      ["Eiffel Tower", 0],
+      ["France", 1]
+    ],
+    "context": [
+      [
+        "Eiffel Tower",
+        [
+          "The Eiffel Tower is a wrought-iron lattice tower located on the Champ de Mars in Paris, France.",
+          "It was constructed from 1887 to 1889 as the centerpiece of the 1889 World's Fair."
+        ]
+      ],
+      [
+        "France",
+        [
+          "France is a country in Western Europe, officially the French Republic.",
+          "The official language of France is French."
+        ]
+      ]
+    ]
+  }
+]
