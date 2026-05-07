@@ -22,7 +22,9 @@ from mergerag.eval.scorer import exact_match, f1
 from mergerag.ingestion.ingest import ingest_document
 from mergerag.pipeline import MergeRAGPipeline
 
+_BRACKET_RE = re.compile(r"\[([^\]]{1,120})\]")
 _CITATION_RE = re.compile(r"\[[^\]]{1,120}\]")
+_CHUNK_ID_SUFFIX_RE = re.compile(r"-(?:\d{4,}|[0-9a-f]{8,})$")
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,26 @@ logger = logging.getLogger(__name__)
 def _strip_citations(text: str) -> str:
     """Remove inline citation tags like [c0] from a pipeline answer."""
     return _CITATION_RE.sub("", text).strip()
+
+
+def _answer_for_scoring(text: str) -> str:
+    """Extract answer text while tolerating common citation-format mistakes."""
+    stripped = text.strip()
+    without_citations = _strip_citations(stripped)
+    if without_citations:
+        return without_citations
+
+    bracket_values = [match.strip() for match in _BRACKET_RE.findall(stripped) if match.strip()]
+    if not bracket_values:
+        return stripped
+
+    cleaned_values: list[str] = []
+    for value in bracket_values:
+        first_token = re.split(r"[\s,]+", value, maxsplit=1)[0]
+        candidate = _CHUNK_ID_SUFFIX_RE.sub("", first_token).replace("_", " ").strip()
+        if candidate:
+            cleaned_values.append(candidate)
+    return " ".join(cleaned_values)
 
 
 @dataclass
@@ -163,7 +185,7 @@ def run_benchmark(
                 trace = pipeline.run(question, strategy=strategy, collection_name=config.collection_name)
                 run_store.save(trace)
 
-                bare_answer = _strip_citations(trace.answer)
+                bare_answer = _answer_for_scoring(trace.answer)
                 em_score = exact_match(bare_answer, gold_answer)
                 f1_score = f1(bare_answer, gold_answer)
 

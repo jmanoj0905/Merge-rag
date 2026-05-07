@@ -121,6 +121,34 @@ def test_run_benchmark_exact_answer_gives_em_1():
     assert result.results[0].em == 1.0
 
 
+def test_run_benchmark_scores_answer_accidentally_wrapped_in_brackets():
+    fixture_path = _write_fixture(_FIXTURE)
+    run_store, score_store = _make_stores()
+    config = BenchmarkConfig(
+        fixture_path=fixture_path,
+        collection_name="test_col",
+        strategies=["top_k"],
+    )
+    llm = MagicMock(spec=LLMPort)
+    llm.complete.return_value = "[Netherlands]"
+    result = run_benchmark(config, _mock_embedder(), _mock_retriever(), llm, run_store, score_store)
+    assert result.results[0].em == 1.0
+
+
+def test_run_benchmark_scores_answer_encoded_like_chunk_id():
+    fixture_path = _write_fixture(_FIXTURE)
+    run_store, score_store = _make_stores()
+    config = BenchmarkConfig(
+        fixture_path=fixture_path,
+        collection_name="test_col",
+        strategies=["top_k"],
+    )
+    llm = MagicMock(spec=LLMPort)
+    llm.complete.return_value = "[Netherlands-0001]"
+    result = run_benchmark(config, _mock_embedder(), _mock_retriever(), llm, run_store, score_store)
+    assert result.results[0].em == 1.0
+
+
 def test_run_benchmark_wrong_answer_gives_em_0():
     fixture_path = _write_fixture(_FIXTURE)
     run_store, score_store = _make_stores()
