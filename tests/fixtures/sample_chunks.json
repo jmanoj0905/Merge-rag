@@ -1,0 +1,42 @@
+[
+  {
+    "id": "c0",
+    "doc_id": "doc1",
+    "text": "Marie Curie was born in Warsaw, Poland in 1867.",
+    "score": 0.95,
+    "rank": 0,
+    "embedding": []
+  },
+  {
+    "id": "c1",
+    "doc_id": "doc1",
+    "text": "She conducted pioneering research on radioactivity.",
+    "score": 0.90,
+    "rank": 1,
+    "embedding": []
+  },
+  {
+    "id": "c2",
+    "doc_id": "doc1",
+    "text": "Warsaw is the capital and largest city of Poland.",
+    "score": 0.45,
+    "rank": 2,
+    "embedding": []
+  },
+  {
+    "id": "c3",
+    "doc_id": "doc1",
+    "text": "Radioactivity was a term she herself coined.",
+    "score": 0.40,
+    "rank": 3,
+    "embedding": []
+  },
+  {
+    "id": "c4",
+    "doc_id": "doc1",
+    "text": "She was the first woman to win a Nobel Prize.",
+    "score": 0.38,
+    "rank": 4,
+    "embedding": []
+  }
+]

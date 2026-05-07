@@ -1,0 +1,9 @@
+Query: {query}
+
+Anchor Chunk:
+{chunk_a}
+
+Supporting Chunk:
+{chunk_b}
+
+Integrate the supporting chunk's evidence into the anchor chunk. Preserve all information relevant to the query. Do not add any information not present in the two chunks. Preserve the anchor chunk's wording where possible.

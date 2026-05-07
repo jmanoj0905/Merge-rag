@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv venv *)",
+      "Bash(uv pip *)",
+      "Bash(uv run *)",
+      "Bash(/Users/manojj/Documents/CSE-Projects/MergeRAG/.venv/bin/python *)",
+      "Bash(python *)",
+      "Bash(uv sync *)",
+      "Bash(git *)",
+      "Bash(.venv/bin/python *)",
+      "Bash(.venv/bin/pytest *)",
+      "Bash(/Users/manojj/Documents/CSE-Projects/MergeRAG/.venv/bin/pytest *)",
+      "Bash(pip install *)",
+      "Bash(PYTHONPATH=/Users/manojj/Documents/CSE-Projects/MergeRAG /Users/manojj/Documents/CSE-Projects/MergeRAG/.venv/bin/python -m pytest tests/test_loader.py tests/test_chunker.py tests/test_ingest.py -v --tb=short)",
+      "Bash(python3 *)"
+    ]
+  }
+}
