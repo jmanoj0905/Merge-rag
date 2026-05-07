@@ -83,3 +83,30 @@ class IngestResponse(BaseModel):
 class CollectionInfo(BaseModel):
     name: str
     chunk_count: int
+
+
+class RunSummary(BaseModel):
+    run_id: str
+    created_at: str
+    query: str
+    strategy: Strategy
+    collection_name: str
+    token_count: int
+    latency_ms: float
+
+
+class RunDetail(BaseModel):
+    run_id: str
+    created_at: str
+    query: str
+    strategy: Strategy
+    collection_name: str
+    config: dict
+    answer: str
+    citations: list[CitationOut]
+    token_count: int
+    latency_ms: float
+    retrieved_chunks: list[ChunkOut]
+    merged_chunks: list[MergedChunkOut]
+    final_context: list[ContextItemOut]
+    merge_plan: MergePlanOut | None

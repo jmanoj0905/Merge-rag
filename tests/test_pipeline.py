@@ -88,3 +88,27 @@ def test_run_trace_token_count_is_nonzero():
     )
     trace = pipeline.run("q", strategy="top_k")
     assert trace.token_count > 0
+
+
+def test_run_populates_collection_name():
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=_mock_retriever(),
+        llm=_mock_llm(),
+    )
+    trace = pipeline.run("q", strategy="top_k", collection_name="my_col")
+    assert trace.collection_name == "my_col"
+
+
+def test_run_populates_config_with_pipeline_params():
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=_mock_retriever(),
+        llm=_mock_llm(),
+        top_n=15, top_k=4, strong_k=3, token_budget=1024,
+    )
+    trace = pipeline.run("q", strategy="top_k")
+    assert trace.config["top_n"] == 15
+    assert trace.config["top_k"] == 4
+    assert trace.config["strong_k"] == 3
+    assert trace.config["token_budget"] == 1024

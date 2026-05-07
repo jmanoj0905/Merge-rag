@@ -66,6 +66,7 @@ class MergeRAGPipeline:
         self,
         query: str,
         strategy: Strategy,
+        collection_name: str = "",
     ) -> RunTrace:
         t0 = time.time()
 
@@ -105,4 +106,11 @@ class MergeRAGPipeline:
             citations=citations,
             token_count=_count_tokens(final_context),
             latency_ms=latency_ms,
+            collection_name=collection_name,
+            config={
+                "top_n": self._top_n,
+                "top_k": self._top_k,
+                "strong_k": self._strong_k,
+                "token_budget": self._token_budget,
+            },
         )

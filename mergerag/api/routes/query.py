@@ -37,7 +37,8 @@ def query(
         )
 
     pipeline = get_pipeline(body.collection_name, body.params, request, settings)
-    trace = pipeline.run(body.query, body.strategy)
+    trace = pipeline.run(body.query, body.strategy, body.collection_name)
+    request.app.state.run_store.save(trace)
 
     retrieved_chunks = [
         ChunkOut(

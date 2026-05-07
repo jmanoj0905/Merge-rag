@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from mergerag.core.models import Chunk
+from mergerag.core.models import Chunk, RunScore, RunTrace
 
 
 class EmbedderPort(ABC):
@@ -22,3 +22,25 @@ class LLMPort(ABC):
     @abstractmethod
     def complete(self, prompt: str, max_tokens: int) -> str:
         """Return LLM completion for the given prompt."""
+
+
+class RunStorePort(ABC):
+    @abstractmethod
+    def save(self, run: RunTrace) -> None: ...
+
+    @abstractmethod
+    def get(self, run_id: str) -> RunTrace | None: ...
+
+    @abstractmethod
+    def list_runs(self, limit: int = 50, offset: int = 0) -> list[RunTrace]: ...
+
+
+class ScoreStorePort(ABC):
+    @abstractmethod
+    def save(self, score: RunScore) -> None: ...
+
+    @abstractmethod
+    def get(self, run_id: str) -> RunScore | None: ...
+
+    @abstractmethod
+    def list_scores(self, limit: int = 100, offset: int = 0) -> list[RunScore]: ...

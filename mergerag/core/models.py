@@ -1,5 +1,7 @@
 from __future__ import annotations
+import uuid
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Literal
 
 Strategy = Literal["top_k", "symmetric", "asymmetric"]
@@ -55,3 +57,17 @@ class RunTrace:
     citations: list[Citation]
     token_count: int
     latency_ms: float
+    run_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    collection_name: str = ""
+    config: dict = field(default_factory=dict)
+
+
+@dataclass
+class RunScore:
+    run_id: str
+    question_id: str
+    gold_answer: str
+    em: float
+    f1: float
+    scored_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))

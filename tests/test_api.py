@@ -36,17 +36,17 @@ def _make_mock_llm() -> MagicMock:
 
 @pytest.fixture
 def client():
-    """TestClient with embedder and LLM replaced by mocks."""
+    """TestClient with embedder, LLM, and run store replaced by mocks."""
     with (
         patch("mergerag.api.app.SentenceTransformerEmbedder") as mock_emb_cls,
         patch("mergerag.api.app.OllamaLLM") as mock_llm_cls,
+        patch("mergerag.api.app.SQLiteRunStore") as mock_rs_cls,
     ):
         mock_emb_cls.return_value = _make_mock_embedder()
         mock_llm_cls.return_value = _make_mock_llm()
+        mock_rs_cls.return_value = MagicMock()
 
         with TestClient(app) as c:
-            # app.state.embedder/llm are already mock_emb_cls.return_value /
-            # mock_llm_cls.return_value after lifespan runs — no override needed.
             yield c
 
 
@@ -222,6 +222,84 @@ class TestListCollections:
 # ---------------------------------------------------------------------------
 # DELETE /collections/{name}
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# GET /runs  and  GET /runs/{run_id}
+# ---------------------------------------------------------------------------
+
+class TestRuns:
+    @pytest.fixture
+    def runs_client(self, tmp_path):
+        from mergerag.adapters.run_store import SQLiteRunStore
+        with (
+            patch("mergerag.api.app.SentenceTransformerEmbedder") as mock_emb_cls,
+            patch("mergerag.api.app.OllamaLLM") as mock_llm_cls,
+            patch("mergerag.api.app.SQLiteRunStore") as mock_rs_cls,
+        ):
+            real_store = SQLiteRunStore(str(tmp_path / "runs.db"))
+            mock_rs_cls.return_value = real_store
+            mock_emb_cls.return_value = _make_mock_embedder()
+            mock_llm_cls.return_value = _make_mock_llm()
+            with TestClient(app) as c:
+                yield c
+
+    def _seed_and_query(self, client, collection_name: str) -> dict:
+        from mergerag.adapters.retriever import ChromaRetriever
+        from mergerag.core.models import Chunk
+        retriever = ChromaRetriever(collection_name=collection_name)
+        chunks = [
+            Chunk(id="c1", doc_id="d1", text="Paris is the capital of France.", score=0.0, rank=0),
+        ]
+        retriever.index(chunks, [_EMBED_VEC])
+        resp = client.post("/query", json={
+            "query": "capital of France",
+            "strategy": "top_k",
+            "collection_name": collection_name,
+        })
+        assert resp.status_code == 200
+        return resp.json()
+
+    def test_list_runs_empty_initially(self, runs_client):
+        resp = runs_client.get("/runs")
+        assert resp.status_code == 200
+        assert resp.json() == []
+
+    def test_query_creates_run_record(self, runs_client, collection_name):
+        self._seed_and_query(runs_client, collection_name)
+
+        resp = runs_client.get("/runs")
+        assert resp.status_code == 200
+        runs = resp.json()
+        assert len(runs) == 1
+        assert runs[0]["query"] == "capital of France"
+        assert runs[0]["strategy"] == "top_k"
+        assert runs[0]["collection_name"] == collection_name
+        assert "run_id" in runs[0]
+        assert "created_at" in runs[0]
+        assert "token_count" in runs[0]
+        assert "latency_ms" in runs[0]
+
+    def test_get_run_by_id_returns_full_detail(self, runs_client, collection_name):
+        self._seed_and_query(runs_client, collection_name)
+
+        runs = runs_client.get("/runs").json()
+        run_id = runs[0]["run_id"]
+
+        resp = runs_client.get(f"/runs/{run_id}")
+        assert resp.status_code == 200
+        detail = resp.json()
+        assert detail["run_id"] == run_id
+        assert detail["query"] == "capital of France"
+        assert detail["answer"] == "Test answer."
+        assert "config" in detail
+        assert "retrieved_chunks" in detail
+        assert "final_context" in detail
+        assert "citations" in detail
+
+    def test_get_nonexistent_run_returns_404(self, runs_client):
+        resp = runs_client.get("/runs/nonexistent-run-id-xyz")
+        assert resp.status_code == 404
+
 
 class TestDeleteCollection:
     def test_nonexistent_collection_returns_404(self, client):
