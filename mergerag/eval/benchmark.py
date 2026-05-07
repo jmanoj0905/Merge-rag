@@ -41,6 +41,7 @@ class BenchmarkConfig:
     top_k: int = 5
     strong_k: int = 5
     token_budget: int = 2048
+    limit: int | None = None
 
 
 @dataclass
@@ -135,6 +136,8 @@ def run_benchmark(
     score_store: ScoreStorePort,
 ) -> BenchmarkResult:
     examples: list[dict] = json.loads(Path(config.fixture_path).read_text(encoding="utf-8"))
+    if config.limit is not None:
+        examples = examples[: config.limit]
 
     _ingest_corpus(examples, embedder, retriever)
 

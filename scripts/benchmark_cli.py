@@ -53,6 +53,7 @@ def main() -> None:
         default=["top_k", "symmetric", "asymmetric"],
     )
     parser.add_argument("--persist-path", default=None, help="Chroma persistence directory (omit for ephemeral)")
+    parser.add_argument("--limit", type=int, default=None, help="Cap number of examples (e.g. 500 or 1000)")
     args = parser.parse_args()
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
@@ -71,6 +72,7 @@ def main() -> None:
         fixture_path=args.fixture,
         collection_name=args.collection,
         strategies=args.strategies,
+        limit=args.limit,
     )
 
     result = run_benchmark(config, embedder, retriever, llm, run_store, score_store)
