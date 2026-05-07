@@ -22,7 +22,7 @@ from mergerag.eval.scorer import exact_match, f1
 from mergerag.ingestion.ingest import ingest_document
 from mergerag.pipeline import MergeRAGPipeline
 
-_CITATION_RE = re.compile(r"\[c\d+\]")
+_CITATION_RE = re.compile(r"\[[^\]]{1,120}\]")
 
 logger = logging.getLogger(__name__)
 

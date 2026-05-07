@@ -1,0 +1,210 @@
+{
+  "ran_at": "2026-05-07T06:26:20.799006+00:00",
+  "fixture": "tests/fixtures/hotpotqa_tiny.json",
+  "collection": "hotpotqa_tiny_v3",
+  "summary": {
+    "top_k": {
+      "em_mean": 1.0,
+      "f1_mean": 1.0,
+      "latency_ms_mean": 2310.530376434326,
+      "token_count_mean": 113.8,
+      "n": 5
+    },
+    "symmetric": {
+      "em_mean": 1.0,
+      "f1_mean": 1.0,
+      "latency_ms_mean": 10208.839797973633,
+      "token_count_mean": 120.4,
+      "n": 5
+    },
+    "asymmetric": {
+      "em_mean": 0.8,
+      "f1_mean": 0.8,
+      "latency_ms_mean": 25919.995069503784,
+      "token_count_mean": 199.8,
+      "n": 5
+    }
+  },
+  "results": [
+    {
+      "run_id": "b4bfe5b4-3d81-42f4-86d2-a8678d09ff02",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "top_k",
+      "answer": "Netherlands [Guido_van_Rossum-0000]",
+      "gold_answer": "Netherlands",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 2112.8389835357666,
+      "token_count": 106
+    },
+    {
+      "run_id": "b8a3ed4b-499d-4bfe-ab17-68e29a087d93",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "symmetric",
+      "answer": "Netherlands [Guido_van_Rossum-0000]",
+      "gold_answer": "Netherlands",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 9573.27914237976,
+      "token_count": 106
+    },
+    {
+      "run_id": "ab4e3dbf-e6d5-465b-a57d-4cc82e602608",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "asymmetric",
+      "answer": "Netherlands [Guido_van_Rossum-0000]",
+      "gold_answer": "Netherlands",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 24482.1138381958,
+      "token_count": 106
+    },
+    {
+      "run_id": "a4972c5f-be62-4c36-81e6-c772a39fa3cd",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "top_k",
+      "answer": "No [Christopher_Nolan-0000 Stanley_Kubrick-0000]",
+      "gold_answer": "no",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 2029.789924621582,
+      "token_count": 116
+    },
+    {
+      "run_id": "786f3057-678e-4fca-bd0a-834c62e7059d",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "symmetric",
+      "answer": "No [Christopher_Nolan-0000 Stanley_Kubrick-0000]",
+      "gold_answer": "no",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 11744.563341140747,
+      "token_count": 116
+    },
+    {
+      "run_id": "731a621a-b6f8-4ad0-b839-9631476dd37d",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "asymmetric",
+      "answer": "No [Christopher_Nolan-0000] [Stanley_Kubrick-0000]",
+      "gold_answer": "no",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 39368.71290206909,
+      "token_count": 343
+    },
+    {
+      "run_id": "5b35066c-227d-46a8-adb3-3cd88384d052",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "top_k",
+      "answer": "Huntsville [Jimmy_Wales-0000]",
+      "gold_answer": "Huntsville",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 2531.3210487365723,
+      "token_count": 115
+    },
+    {
+      "run_id": "53946efc-4b02-4940-8386-59d5d82a1e2f",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "symmetric",
+      "answer": "Huntsville [Jimmy_Wales-0000]",
+      "gold_answer": "Huntsville",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 8411.296129226685,
+      "token_count": 115
+    },
+    {
+      "run_id": "9329a9b9-fc17-44c8-a4b8-56a412c8dcbf",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "asymmetric",
+      "answer": "Haarlem [9389746e-72d2-45ff-9838-c8922d4ba7a1]",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 20731.624841690063,
+      "token_count": 155
+    },
+    {
+      "run_id": "0bc84c20-a4d6-4fd1-9b65-bd87489d99e9",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "top_k",
+      "answer": "Tim Cook [Apple_Inc.-0000]",
+      "gold_answer": "Tim Cook",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 2692.7709579467773,
+      "token_count": 119
+    },
+    {
+      "run_id": "d05fa0ce-61cc-4071-bf84-7515b37f3a93",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "symmetric",
+      "answer": "Tim Cook [Apple_Inc.-0000]",
+      "gold_answer": "Tim Cook",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 10295.727252960205,
+      "token_count": 119
+    },
+    {
+      "run_id": "b9b8a01e-b6fc-43ae-9543-b97ddb4f73c2",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "asymmetric",
+      "answer": "Tim Cook [Apple_Inc.-0000]",
+      "gold_answer": "Tim Cook",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 24472.017765045166,
+      "token_count": 229
+    },
+    {
+      "run_id": "0494ce2a-7e8f-4048-b6cf-c1169f3c0893",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "top_k",
+      "answer": "French [France-0000] [Eiffel_Tower-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 2185.9309673309326,
+      "token_count": 113
+    },
+    {
+      "run_id": "9915e565-caf7-40ba-acc7-10e4fb135b17",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "symmetric",
+      "answer": "French [Eiffel_Tower-0000 France-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 11019.333124160767,
+      "token_count": 146
+    },
+    {
+      "run_id": "2aa54d2f-4032-4808-ba46-f1a036e2f6b8",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "asymmetric",
+      "answer": "French [France-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 20545.5060005188,
+      "token_count": 166
+    }
+  ]
+}

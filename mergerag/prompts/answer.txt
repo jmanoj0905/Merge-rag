@@ -1,4 +1,9 @@
-Answer the following query using only the provided context. For each sentence in your answer, cite the source chunk IDs in brackets, e.g. [chunk_id_1, chunk_id_2].
+Answer the following query using only the provided context. Give the shortest correct answer — typically 1–5 words — followed by the supporting chunk ID(s) in brackets.
+
+Format: <answer words> [chunk_id]
+Example: "Paris [Eiffel_Tower-0000]" or "No [Christopher_Nolan-0000]"
+
+Do not put the answer inside brackets. The answer comes first, citations come after.
 
 Query: {query}
 

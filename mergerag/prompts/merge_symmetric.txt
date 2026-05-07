@@ -6,4 +6,4 @@ Chunk A:
 Chunk B:
 {chunk_b}
 
-Synthesize the above into a single concise passage that preserves all evidence relevant to the query. Do not add any information not present in Chunk A or Chunk B. Preserve original wording where possible.
+Synthesize the above into a single concise passage that preserves all evidence relevant to the query. Do not add any information not present in Chunk A or Chunk B. Preserve original wording where possible. Output only the synthesized passage — no preamble, no reasoning, do not repeat the query.

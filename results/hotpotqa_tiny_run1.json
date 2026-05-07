@@ -1,0 +1,210 @@
+{
+  "ran_at": "2026-05-07T06:16:06.583903+00:00",
+  "fixture": "tests/fixtures/hotpotqa_tiny.json",
+  "collection": "hotpotqa_tiny",
+  "summary": {
+    "top_k": {
+      "em_mean": 0.0,
+      "f1_mean": 0.11916252168883748,
+      "latency_ms_mean": 8830.694770812988,
+      "token_count_mean": 113.8,
+      "n": 5
+    },
+    "symmetric": {
+      "em_mean": 0.0,
+      "f1_mean": 0.11542840596578914,
+      "latency_ms_mean": 14898.784589767456,
+      "token_count_mean": 197.6,
+      "n": 5
+    },
+    "asymmetric": {
+      "em_mean": 0.0,
+      "f1_mean": 0.036088509837199516,
+      "latency_ms_mean": 41752.20513343811,
+      "token_count_mean": 302,
+      "n": 5
+    }
+  },
+  "results": [
+    {
+      "run_id": "bd97faf0-678e-4851-a3af-beb56539568f",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "top_k",
+      "answer": "Python was created in the Netherlands. [Guido_van_Rossum-0000] indicates that Guido van Rossum, who created Python, was born in Haarlem, which is located in the Netherlands. Therefore, Python was created in the Netherlands. [France-0000] states that the official language of France is French, but it does not provide information about where Python was created.",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.039999999999999994,
+      "latency_ms": 31383.7251663208,
+      "token_count": 106
+    },
+    {
+      "run_id": "7195df2a-1e14-4da5-8df0-e6ef63526162",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "symmetric",
+      "answer": "The programming language Python was created in the Netherlands. [Guido_van_Rossum-0000]",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.2222222222222222,
+      "latency_ms": 11495.75400352478,
+      "token_count": 183
+    },
+    {
+      "run_id": "1b61ab9e-1e4d-4457-b481-a72278c36013",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "asymmetric",
+      "answer": "In what country was the programming language Python created?\n\nThe creation of Python is not mentioned in either the anchor or supporting chunk provided. Therefore, based solely on the given information, it's not possible to determine in which country Python was created.\n\n[Guido_van_Rossum-0000]\nGuido van Rossum is a Dutch programmer best known for creating Python.\n\nHe was born on January 31, 1956, in Haarlem, Netherlands. [chunk_id_4]\n\nBased on the information provided, the programming language Python was created in the Netherlands.",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.0273972602739726,
+      "latency_ms": 41607.48195648193,
+      "token_count": 282
+    },
+    {
+      "run_id": "830f6430-6009-40d8-98d0-d3101ca05bc5",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "top_k",
+      "answer": "Christopher Nolan [Christopher_Nolan-0000] is a British-American film director, while Stanley Kubrick [Stanley_Kubrick-0000] was an American film director. Therefore, they are not both British directors.",
+      "gold_answer": "no",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 3784.9018573760986,
+      "token_count": 116
+    },
+    {
+      "run_id": "d2bcc438-5d0e-4a31-98af-3b0b8f96d28d",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "symmetric",
+      "answer": "No, Christopher Nolan and Stanley Kubrick are not both British directors.\n\n[Christopher_Nolan-0000, Stanley_Kubrick-0000]",
+      "gold_answer": "no",
+      "em": 0.0,
+      "f1": 0.14285714285714288,
+      "latency_ms": 10521.173000335693,
+      "token_count": 172
+    },
+    {
+      "run_id": "30ff706d-8ab2-4059-8d28-197a539da5ec",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "asymmetric",
+      "answer": "Are Christopher Nolan and Stanley Kubrick both British directors?\nThe provided chunks do not contain any information regarding Christopher Nolan or Stanley Kubrick. Therefore, we cannot answer whether they are both British directors based on the given text.\n\n[Christopher_Nolan-0000]\n[Stanley_Kubrick-0000]",
+      "gold_answer": "no",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 47162.657022476196,
+      "token_count": 457
+    },
+    {
+      "run_id": "9ded48df-9654-4168-b751-d4ecf21d4ceb",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "top_k",
+      "answer": "The founder of Wikipedia, Jimmy Wales, was born in Huntsville, Alabama, United States. [Jimmy_Wales-0000]",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.14285714285714288,
+      "latency_ms": 2521.030902862549,
+      "token_count": 115
+    },
+    {
+      "run_id": "6e2d9c18-c82c-4955-acb3-c7973bfffcdc",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "symmetric",
+      "answer": "[4acba649-575a-4f43-a061-f382aa2f0726] Chunk A synthesized with relevance to the query about Wikipedia's founder being born in a city involves mentioning Steve Jobs, as he was the co-founder of Apple and later served as CEO until his death in 2011. However, neither chunk provides information about Steve Jobs' place of birth or where Wikipedia was founded. Therefore, I cannot directly answer the specific query regarding the founding city of Wikipedia's founder without additional information not present in the provided chunks.\n\n[Jimmy_Wales-0000] Jimmy Donal Wales is an American internet entrepreneur and former financial trader. He was born on August 7, 1966, in Huntsville, Alabama, United States.",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.020833333333333332,
+      "latency_ms": 19280.11703491211,
+      "token_count": 225
+    },
+    {
+      "run_id": "3ac2fcff-2bdb-4026-8d2a-df3bbf873a51",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "asymmetric",
+      "answer": "[chunk_id_4da19e0d-07a8-4ea5-a4bf-9bcf64633639]\n\nThe founder of Wikipedia, Jimmy Wales, co-founded the platform with Larry Sanger in January 2001. However, the query specifically asks about the city where the founder's birthplace is located. From [chunk_id_4da19e0d-07a8-4ea5-a4bf-9bcf64633639], we learn that Stanley Kubrick, who co-founded Wikipedia, was born in The Bronx, New York, United States. Since Jimmy Wales is not mentioned as being related to the founder of Wikipedia and there are no explicit details about his place of birth provided in the context, we cannot determine where he was born based on the given information.\n\nGiven the available data, [chunk_id_4da19e0d-07a8-4ea5-a4bf-9bcf64633639] is the only chunk that provides relevant information about a co-founder of Wikipedia's birthplace. Therefore, based on the context provided:\n\nThe founder of Wikipedia was born in New York City.",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 41247.225761413574,
+      "token_count": 267
+    },
+    {
+      "run_id": "4791c8bc-f847-4706-a739-8b2da5a6aadb",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "top_k",
+      "answer": "The CEO of the company that makes the iPhone is Tim Cook. [chunk_id_0001, chunk_id_0002]",
+      "gold_answer": "Tim Cook",
+      "em": 0.0,
+      "f1": 0.3076923076923077,
+      "latency_ms": 3224.5430946350098,
+      "token_count": 119
+    },
+    {
+      "run_id": "52208973-6398-4ec5-b839-9b54ee391c00",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "symmetric",
+      "answer": "The query \"Who is the CEO of the company that makes the iPhone?\" is not addressed by any of the provided chunks. Therefore, based solely on the given context:\n\n[Apple_Inc.-0000] [iPhone-0000]\nApple Inc., headquartered in Cupertino, California, is an American multinational technology company. The first iPhone was unveiled by Steve Jobs on January 9, 2007. However, none of the provided chunks contain information about the current CEO of Apple Inc.\n\n[chunk_3fc8fe2e-0c46-4fbc-b166-7271485833a3]\nChunk A and Chunk B do not provide any relevant information regarding the iPhone or its manufacturer, Apple Inc., nor do they contain details about the CEO of this company.\n\nTherefore, based on the provided context:\n[chunk_3fc8fe2e-0c46-4fbc-b166-7271485833a3]\nTim Cook has served as the CEO of Apple since August 2011.",
+      "gold_answer": "Tim Cook",
+      "em": 0.0,
+      "f1": 0.03738317757009346,
+      "latency_ms": 20307.069063186646,
+      "token_count": 197
+    },
+    {
+      "run_id": "c958eaf1-619c-4188-b477-17d413775ab3",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "asymmetric",
+      "answer": "The query about the CEO of the company that makes the iPhone cannot be answered using the provided anchor and supporting chunks. \n\n[Apple_Inc.-0000]\nApple Inc. is an American multinational technology company headquartered in Cupertino, California.\n\n[ddbdc665-198a-4f17-8308-b8c369b1de20]\nThe anchor chunk does not contain the required information to answer the query \"Who is the CEO of the company that makes the iPhone?\". The supporting chunk provides information about Python and its creator, Guido van Rossum, but it does not mention anything related to the iPhone or its CEO. Therefore, no integration with the supporting chunk can provide an answer to the query as stated.\n\nThe relevant information needed is provided in [Apple_Inc.-0000], which states that Apple Inc., a company that makes the iPhone, has had Tim Cook serving as the CEO since August 2011.",
+      "gold_answer": "Tim Cook",
+      "em": 0.0,
+      "f1": 0.035398230088495575,
+      "latency_ms": 42984.46297645569,
+      "token_count": 301
+    },
+    {
+      "run_id": "59877dae-3441-4db2-b88c-6c5e95de4b94",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "top_k",
+      "answer": "The Eiffel Tower is located in Paris, France [Eiffel_Tower-0000, France-0000]. Therefore, the language spoken in this country is French [France-0000].",
+      "gold_answer": "French",
+      "em": 0.0,
+      "f1": 0.10526315789473684,
+      "latency_ms": 3239.2728328704834,
+      "token_count": 113
+    },
+    {
+      "run_id": "30347816-89c2-4c8a-95a6-26ca590c52a6",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "symmetric",
+      "answer": "The language spoken in the country where the Eiffel Tower is located is French [France-0000].",
+      "gold_answer": "French",
+      "em": 0.0,
+      "f1": 0.15384615384615385,
+      "latency_ms": 12889.809846878052,
+      "token_count": 211
+    },
+    {
+      "run_id": "f7cdea96-70ff-4dfe-84ed-4131699f8279",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "asymmetric",
+      "answer": "The Eiffel Tower, which is located in Paris, France, speaks French as its official language. [Eiffel_Tower-0000, France-0000]",
+      "gold_answer": "French",
+      "em": 0.0,
+      "f1": 0.11764705882352941,
+      "latency_ms": 35759.19795036316,
+      "token_count": 203
+    }
+  ]
+}

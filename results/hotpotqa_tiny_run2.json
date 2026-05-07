@@ -1,0 +1,210 @@
+{
+  "ran_at": "2026-05-07T06:22:04.193254+00:00",
+  "fixture": "tests/fixtures/hotpotqa_tiny.json",
+  "collection": "hotpotqa_tiny_v2",
+  "summary": {
+    "top_k": {
+      "em_mean": 0.4,
+      "f1_mean": 0.4,
+      "latency_ms_mean": 1582.6294422149658,
+      "token_count_mean": 113.8,
+      "n": 5
+    },
+    "symmetric": {
+      "em_mean": 0.6,
+      "f1_mean": 0.6,
+      "latency_ms_mean": 10592.65341758728,
+      "token_count_mean": 143.4,
+      "n": 5
+    },
+    "asymmetric": {
+      "em_mean": 0.2,
+      "f1_mean": 0.33782771535580525,
+      "latency_ms_mean": 27361.689376831055,
+      "token_count_mean": 209,
+      "n": 5
+    }
+  },
+  "results": [
+    {
+      "run_id": "ae758662-d17b-4879-b2c0-f0fcc371b4c1",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "top_k",
+      "answer": "[Netherlands-0001]",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 1689.241886138916,
+      "token_count": 106
+    },
+    {
+      "run_id": "5c6431ba-18b3-48c9-9131-3dbb7a0dc3c1",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "symmetric",
+      "answer": "[Netherlands]",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 9505.12409210205,
+      "token_count": 143
+    },
+    {
+      "run_id": "7d182514-120f-46ee-b5b3-a04c8848a43a",
+      "question_id": "q1_python_country",
+      "question": "In what country was the programming language Python created?",
+      "strategy": "asymmetric",
+      "answer": "[Netherlands] [chunk_id_3]",
+      "gold_answer": "Netherlands",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 28042.327880859375,
+      "token_count": 130
+    },
+    {
+      "run_id": "e9761352-cbb1-4847-81cc-360fcd624da3",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "top_k",
+      "answer": "No [Christopher_Nolan-0000]",
+      "gold_answer": "no",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 1609.886884689331,
+      "token_count": 116
+    },
+    {
+      "run_id": "a79dd768-c8de-4c8f-84c9-f5924ba0affd",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "symmetric",
+      "answer": "No [Christopher_Nolan-0000]",
+      "gold_answer": "no",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 14557.89303779602,
+      "token_count": 116
+    },
+    {
+      "run_id": "c8342951-8775-4de1-bc2b-55da3eeb0a22",
+      "question_id": "q2_nolan_kubrick",
+      "question": "Are Christopher Nolan and Stanley Kubrick both British directors?",
+      "strategy": "asymmetric",
+      "answer": "No [chunk_id_4]\n\nAre Christopher Nolan and Stanley Kubrick both British directors?\n\n[791afc23-c090-4a9f-b6d0-f1a4004fdfaf]\nApple Inc. is an American multinational technology company headquartered in Cupertino, California. The iPhone is a line of smartphones designed and marketed by Apple Inc., which was unveiled by Steve Jobs on January 9, 2007. Tim Cook has served as the CEO of Apple since August 2011.\n\nAnswer:\nNo [chunk_id_4]\n\nChristopher Nolan is not British; he is an American filmmaker known for directing films such as \"The Dark Knight\" and \"Inception.\" Stanley Kubrick was indeed a British film director, though he later moved to the United States.",
+      "gold_answer": "no",
+      "em": 0.0,
+      "f1": 0.02247191011235955,
+      "latency_ms": 43533.70022773743,
+      "token_count": 336
+    },
+    {
+      "run_id": "fe1c7fcc-6903-439b-b100-32be55a48bed",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "top_k",
+      "answer": "[Harrison_Ford-0000]",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 1524.4739055633545,
+      "token_count": 115
+    },
+    {
+      "run_id": "893ba9c4-40f8-4557-a5e0-f13df0267a06",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "symmetric",
+      "answer": "[Huckleberry_Fiffin-0000]",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 6938.107967376709,
+      "token_count": 112
+    },
+    {
+      "run_id": "fff198f9-62c6-47f8-9fd8-4d6af096bb90",
+      "question_id": "q3_wikipedia_founder",
+      "question": "In what city was the founder of Wikipedia born?",
+      "strategy": "asymmetric",
+      "answer": "Huntsville, Alabama [Jimmy_Wales-0000]",
+      "gold_answer": "Huntsville",
+      "em": 0.0,
+      "f1": 0.6666666666666666,
+      "latency_ms": 22200.06489753723,
+      "token_count": 179
+    },
+    {
+      "run_id": "963d2d08-b57e-4a34-8675-b2d7fddf6642",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "top_k",
+      "answer": "[Tim_Cook-0002]",
+      "gold_answer": "Tim Cook",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 1580.5072784423828,
+      "token_count": 119
+    },
+    {
+      "run_id": "41a48428-22e9-4ebc-96a5-63278368c41e",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "symmetric",
+      "answer": "Tim Cook [b796125f-dfe9-4cf1-a80e-a82ddc2d6dda]",
+      "gold_answer": "Tim Cook",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 11545.783042907715,
+      "token_count": 159
+    },
+    {
+      "run_id": "46455c51-0c56-4979-894a-efd9dcabe3f0",
+      "question_id": "q4_iphone_ceo",
+      "question": "Who is the CEO of the company that makes the iPhone?",
+      "strategy": "asymmetric",
+      "answer": "[Tim_Cook-0001]",
+      "gold_answer": "Tim Cook",
+      "em": 0.0,
+      "f1": 0.0,
+      "latency_ms": 22556.447982788086,
+      "token_count": 217
+    },
+    {
+      "run_id": "589e85d5-a259-4ada-86d6-9279e57c41ac",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "top_k",
+      "answer": "French [France-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 1509.0372562408447,
+      "token_count": 113
+    },
+    {
+      "run_id": "40368543-8acd-447e-bbd0-3f22b5c13051",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "symmetric",
+      "answer": "French [France-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 10416.358947753906,
+      "token_count": 187
+    },
+    {
+      "run_id": "ebe94bd3-959d-400b-8e60-35242c479d87",
+      "question_id": "q5_eiffel_language",
+      "question": "What language is spoken in the country where the Eiffel Tower is located?",
+      "strategy": "asymmetric",
+      "answer": "French [France-0000]",
+      "gold_answer": "French",
+      "em": 1.0,
+      "f1": 1.0,
+      "latency_ms": 20475.905895233154,
+      "token_count": 183
+    }
+  ]
+}
