@@ -4,7 +4,7 @@ from app.api_client import call_query, APIError
 from app.helpers import compute_em, strip_citations
 
 API_BASE = "http://localhost:8000"
-COLLECTION = "hotpot_dev_500_v2"
+COLLECTION = "hotpot_dev_500"
 TIMEOUT_S = 120
 STRATEGIES: list[str] = ["top_k", "symmetric", "asymmetric"]
 
@@ -14,12 +14,14 @@ st.markdown("""
     * { font-family: monospace !important; }
     .block-container { padding-top: 2rem; }
     [data-testid="stSidebar"] { display: none; }
+    code { color: black !important; background-color: #f0f0f0 !important; }
+    .stExpander { margin-bottom: 4px !important; }
 </style>
 """, unsafe_allow_html=True)
 
 
 def render_column(strategy: str, data: dict | None, error: str | None, gold: str) -> None:
-    st.markdown(f"**{strategy}**")
+    st.subheader(strategy)
     st.markdown("---")
 
     if error:
@@ -43,16 +45,18 @@ def render_column(strategy: str, data: dict | None, error: str | None, gold: str
     if data["citations"]:
         st.markdown("**CITATIONS**")
         for c in data["citations"]:
-            st.markdown("  ".join(f"`[{cid}]`" for cid in c["chunk_ids"]))
+            st.markdown(" · ".join(c["chunk_ids"]))
 
     # Final context
     st.markdown("**FINAL CONTEXT**")
     for item in data["final_context"]:
         if item["type"] == "chunk":
-            label = f"▸ {item['id']}  (score: {item['score']:.3f})"
+            label = f"{item['id'][:60]}  (score: {item['score']:.3f})"
         else:
-            label = f"◈ {item['id']}  (merged)"
+            label = f"{item['id'][:60]}  [merged]"
         with st.expander(label):
+            if item["type"] == "merged":
+                st.caption(f"type: merged")
             st.text(item["text"])
             if item["type"] == "merged":
                 st.markdown(f"_sources: {', '.join(item['source_chunk_ids'])}_")
