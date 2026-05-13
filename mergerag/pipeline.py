@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 import re
 import time
 from pathlib import Path
@@ -11,6 +12,7 @@ from mergerag.core.utils import cosine_similarity
 from mergerag.merge import planner, executor
 
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
+logger = logging.getLogger(__name__)
 
 
 def _count_tokens(items: list[Chunk | MergedChunk]) -> int:
@@ -70,30 +72,55 @@ class MergeRAGPipeline:
     ) -> RunTrace:
         t0 = time.time()
 
+        t_embed_start = time.time()
         query_emb = self._embedder.embed([query])[0]
+        t_embed = time.time() - t_embed_start
+
+        t_retrieve_start = time.time()
         chunks = self._retriever.retrieve(query_emb, self._top_n)
+        t_retrieve = time.time() - t_retrieve_start
 
         merge_plan: MergePlan | None = None
         merged: list[MergedChunk] = []
+        t_merge = t_re_embed = t_rerank = 0.0
 
         if strategy == "top_k":
             final_context: list[Chunk | MergedChunk] = chunks[: self._top_k]
         else:
             merge_plan = planner.plan(chunks, strategy, self._strong_k)
+
+            t_merge_start = time.time()
             merged = executor.execute(merge_plan, query, self._llm)
+            t_merge = time.time() - t_merge_start
 
             if merged:
+                t_re_embed_start = time.time()
                 merged_embs = self._embedder.embed([m.text for m in merged])
+                t_re_embed = time.time() - t_re_embed_start
                 for m, emb in zip(merged, merged_embs):
                     m.embedding = emb
 
+            t_rerank_start = time.time()
             pool: list[Chunk | MergedChunk] = list(chunks[: self._strong_k]) + merged
             pool = [x for x in pool if x.embedding]
             pool.sort(key=lambda x: cosine_similarity(x.embedding, query_emb), reverse=True)
             final_context = pool[: self._top_k]
+            t_rerank = time.time() - t_rerank_start
 
+        t_answer_start = time.time()
         answer, citations = _generate_answer(final_context, query, self._llm)
+        t_answer = time.time() - t_answer_start
+
         latency_ms = (time.time() - t0) * 1000
+
+        logger.debug(
+            "pipeline stage_ms strategy=%s embed=%.0f retrieve=%.0f merge=%.0f "
+            "re_embed=%.0f rerank=%.0f answer=%.0f total=%.0f",
+            strategy,
+            t_embed * 1000, t_retrieve * 1000, t_merge * 1000,
+            t_re_embed * 1000, t_rerank * 1000, t_answer * 1000,
+            latency_ms,
+        )
 
         return RunTrace(
             query=query,

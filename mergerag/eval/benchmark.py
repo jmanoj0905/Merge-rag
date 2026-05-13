@@ -174,8 +174,9 @@ def run_benchmark(
     )
 
     results: list[RunResult] = []
+    total = len(examples)
 
-    for example in examples:
+    for idx, example in enumerate(examples):
         question_id = example.get("_id", "")
         question = example.get("question", "")
         gold_answer = example.get("answer", "")
@@ -188,6 +189,7 @@ def run_benchmark(
                 bare_answer = _answer_for_scoring(trace.answer)
                 em_score = exact_match(bare_answer, gold_answer)
                 f1_score = f1(bare_answer, gold_answer)
+                logger.info("[%d/%d] %s em=%.0f lat=%.0fs", idx + 1, total, strategy, em_score, trace.latency_ms / 1000)
 
                 run_score = RunScore(
                     run_id=trace.run_id,
