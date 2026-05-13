@@ -38,5 +38,5 @@ def test_empty_strong_returns_no_ops():
 def test_each_weak_chunk_gets_one_op():
     strong = [_chunk("s1", [1.0, 0.0], rank=0)]
     weak = [_chunk(f"w{i}", [1.0, 0.0], rank=i + 5) for i in range(4)]
-    ops = assign_to_anchors(weak, strong)
+    ops = assign_to_anchors(weak, strong, max_ops=len(weak))
     assert len(ops) == 4

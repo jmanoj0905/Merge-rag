@@ -39,7 +39,7 @@ def test_merged_chunk_has_correct_type():
 
 
 def test_llm_called_once_per_op():
-    ops = [MergeOp(type="symmetric", primary=_chunk(f"c{i}"), secondary=_chunk(f"c{i+1}")) for i in range(3)]
+    ops = [MergeOp(type="asymmetric", primary=_chunk(f"c{i}"), secondary=_chunk(f"c{i+1}")) for i in range(3)]
     plan = MergePlan(operations=ops)
     llm = _mock_llm()
     execute(plan, query="q", llm=llm)
