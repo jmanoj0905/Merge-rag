@@ -1,7 +1,9 @@
 # Agent Stuff
 AGENT.md
 PROJECT_BRIEF.md
+CLAUDE.md
 .claude
+docs/superpowers/
 
 # Python
 __pycache__/
