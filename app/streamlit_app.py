@@ -11,11 +11,18 @@ STRATEGIES: list[str] = ["top_k", "symmetric", "asymmetric"]
 st.set_page_config(page_title="MergeRAG", layout="wide")
 st.markdown("""
 <style>
-    * { font-family: monospace !important; }
+    *:not([data-testid="stIconMaterial"]):not(.material-icons):not(.material-symbols-rounded):not(.material-symbols-outlined) {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    }
     .block-container { padding-top: 2rem; }
     [data-testid="stSidebar"] { display: none; }
-    code { color: black !important; background-color: #f0f0f0 !important; }
+    code { color: black !important; background-color: #f0f0f0 !important; word-break: break-all; }
     .stExpander { margin-bottom: 4px !important; }
+    [data-testid="stExpander"] summary p { word-break: break-all; }
+    [data-testid="stCodeBlock"] pre, [data-testid="stCode"] pre {
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
