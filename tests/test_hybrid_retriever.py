@@ -51,3 +51,42 @@ def test_rrf_fuse_does_not_mutate_inputs():
     original_score = c1.score
     rrf_fuse(dense=[c1], sparse=[c1])
     assert c1.score == original_score
+
+
+# ── BM25Index ─────────────────────────────────────────────────────────────────
+
+def test_bm25_index_retrieves_by_keyword():
+    chunks = [
+        Chunk(id="c_fox", doc_id="d1", text="the quick brown fox", score=0.0, rank=0, embedding=[]),
+        Chunk(id="c_cat", doc_id="d1", text="the lazy cat sleeps", score=0.0, rank=1, embedding=[]),
+    ]
+    idx = BM25Index(chunks)
+    results = idx.retrieve("fox", top_n=1)
+    assert results[0].id == "c_fox"
+
+
+def test_bm25_index_empty_corpus_returns_empty():
+    idx = BM25Index([])
+    results = idx.retrieve("anything", top_n=5)
+    assert results == []
+
+
+def test_bm25_index_top_n_limits_results():
+    chunks = [
+        Chunk(id=f"c{i}", doc_id="d1", text=f"word{i} common", score=0.0, rank=i, embedding=[])
+        for i in range(10)
+    ]
+    idx = BM25Index(chunks)
+    results = idx.retrieve("common", top_n=3)
+    assert len(results) == 3
+
+
+def test_bm25_index_rare_term_ranks_highest():
+    chunks = [
+        Chunk(id="rare", doc_id="d1", text="derrickson unique filmmaker", score=0.0, rank=0, embedding=[]),
+        Chunk(id="common1", doc_id="d1", text="american filmmaker director", score=0.0, rank=1, embedding=[]),
+        Chunk(id="common2", doc_id="d1", text="filmmaker director producer", score=0.0, rank=2, embedding=[]),
+    ]
+    idx = BM25Index(chunks)
+    results = idx.retrieve("derrickson", top_n=3)
+    assert results[0].id == "rare"

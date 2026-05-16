@@ -1,6 +1,7 @@
 import logging
 
 import chromadb
+from rank_bm25 import BM25Okapi
 from mergerag.core.models import Chunk, Query
 from mergerag.core.ports import RetrieverPort
 
@@ -84,9 +85,25 @@ def rrf_fuse(
     return result
 
 
-# Stubs — implemented in Tasks 7 and 8
 class BM25Index:
-    ...
+    def __init__(self, chunks: list[Chunk]) -> None:
+        self._chunks = chunks
+        if chunks:
+            tokenized = [c.text.lower().split() for c in chunks]
+            self._bm25: BM25Okapi | None = BM25Okapi(tokenized)
+        else:
+            self._bm25 = None
+
+    def retrieve(self, query_text: str, top_n: int) -> list[Chunk]:
+        if not self._chunks or self._bm25 is None:
+            return []
+        tokens = query_text.lower().split()
+        scores = self._bm25.get_scores(tokens)
+        ranked = sorted(zip(self._chunks, scores), key=lambda x: x[1], reverse=True)
+        return [chunk for chunk, _ in ranked[:top_n]]
+
+
+# Stub — implemented in Task 8
 
 
 class HybridRetriever:
