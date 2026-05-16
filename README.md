@@ -195,6 +195,32 @@ The API server reads these environment variables, all optional:
 `DEFAULT_TOP_K` — final context window size (default: 5).  
 `DEFAULT_STRONG_K` — strong anchor count for merge planning (default: 5).
 
+## Benchmark results
+
+All runs: HotpotQA distractor dev set, n=500, qwen2.5:3b.
+
+**Dense retrieval (ChromaRetriever, v2)**
+
+| strategy   |   EM  |   F1  | latency_ms |
+|------------|-------|-------|------------|
+| top_k      | 0.244 | 0.336 |       3646 |
+| symmetric† | 0.246 | 0.336 |       3796 |
+| asymmetric | 0.252 | 0.346 |       4817 |
+
+† concatenation (no LLM synthesis).
+
+**Hybrid retrieval (HybridRetriever: BM25 + dense, RRF k=60, v3)**
+
+| strategy   |   EM  |   F1  | latency_ms |
+|------------|-------|-------|------------|
+| top_k      | 0.240 | 0.320 |       3833 |
+| symmetric  | 0.240 | 0.320 |       3219 |
+| asymmetric | 0.240 | 0.320 |       3495 |
+
+Hybrid EM is flat vs dense-only. The BM25 arm fixes targeted entity recall (verified on "Scott Derrickson nationality") but the RRF pool introduces noise from HotpotQA's topically similar distractor paragraphs that cancels the gain at aggregate level. See `results/benchmark_findings.md` for full analysis.
+
+---
+
 ## Dataset and evaluation
 
 All benchmarks were run on the HotpotQA distractor setting — a multi-hop QA dataset where each question comes with ten candidate paragraphs (only two of which are actually supporting), making it a good stress test for retrieval and context selection. We used the first 500 examples from the development set.
