@@ -4,7 +4,10 @@ from mergerag.adapters.retriever import rrf_fuse, BM25Index, HybridRetriever
 
 
 def _chunk(id_: str, rank: int = 0) -> Chunk:
-    return Chunk(id=id_, doc_id="d1", text=f"text about {id_}", score=0.9 - rank * 0.1, rank=rank, embedding=[])
+    return Chunk(
+        id=id_, doc_id="d1", text=f"text about {id_}",
+        score=0.9 - rank * 0.1, rank=rank, embedding=[],
+    )
 
 
 # ── rrf_fuse ──────────────────────────────────────────────────────────────────
