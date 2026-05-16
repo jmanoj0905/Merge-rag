@@ -51,3 +51,43 @@ class ChromaRetriever(RetrieverPort):
                 embedding=list(emb),
             ))
         return chunks
+
+
+def rrf_fuse(
+    dense: list[Chunk],
+    sparse: list[Chunk],
+    k: int = 60,
+) -> list[Chunk]:
+    scores: dict[str, float] = {}
+    chunk_map: dict[str, Chunk] = {}
+
+    for rank, chunk in enumerate(dense):
+        scores[chunk.id] = scores.get(chunk.id, 0.0) + 1.0 / (k + rank)
+        chunk_map[chunk.id] = chunk
+
+    for rank, chunk in enumerate(sparse):
+        scores[chunk.id] = scores.get(chunk.id, 0.0) + 1.0 / (k + rank)
+        chunk_map[chunk.id] = chunk
+
+    sorted_ids = sorted(scores, key=lambda id_: scores[id_], reverse=True)
+    result = []
+    for new_rank, id_ in enumerate(sorted_ids):
+        c = chunk_map[id_]
+        result.append(Chunk(
+            id=c.id,
+            doc_id=c.doc_id,
+            text=c.text,
+            score=scores[id_],
+            rank=new_rank,
+            embedding=c.embedding,
+        ))
+    return result
+
+
+# Stubs — implemented in Tasks 7 and 8
+class BM25Index:
+    ...
+
+
+class HybridRetriever:
+    ...
