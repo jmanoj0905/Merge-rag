@@ -4,9 +4,11 @@ A retrieval-augmented generation system that merges retrieved chunks before pass
 
 ## How it works
 
-When a query arrives, MergeRAG embeds it, retrieves the top-N candidates from ChromaDB, then decides how to merge them based on the chosen strategy. The merged pool gets re-embedded and reranked against the original query before the final context is handed to the LLM for answer generation.
+When a query arrives, MergeRAG embeds it, retrieves the top-N candidates, then decides how to merge them based on the chosen strategy. The merged pool gets re-embedded and reranked against the original query before the final context is handed to the LLM for answer generation.
 
-Three strategies are supported. `top_k` is the plain baseline — no merging, just the highest-scoring chunks. `symmetric` pairs weak chunks from the same document together via concatenation. `asymmetric` anchors each weak chunk to its nearest strong same-doc chunk and synthesizes them with a dedicated LLM call, capped at three operations to bound latency.
+**Retrieval** can use `ChromaRetriever` (dense cosine search only) or `HybridRetriever` (BM25 sparse + Chroma dense, fused via Reciprocal Rank Fusion). Hybrid retrieval fixes entity-name recall gaps where dense similarity alone fails — e.g. a query for "Scott Derrickson nationality" that the dense arm misses is surfaced at rank 2 by the BM25 arm.
+
+**Three merge strategies** are supported. `top_k` is the plain baseline — no merging, just the highest-scoring chunks. `symmetric` pairs weak chunks from the same document together via concatenation. `asymmetric` anchors each weak chunk to its nearest strong same-doc chunk and synthesizes them with a dedicated LLM call, capped at three operations to bound latency.
 
 On HotpotQA (n=500, qwen2.5:3b), asymmetric beats the top_k baseline by +1.0 EM and +1.1 F1 at roughly 42% latency overhead. Symmetric slightly underperforms — adjacent same-doc chunks tend to be topically adjacent but not complementary, producing noisier merged context.
 
@@ -25,7 +27,7 @@ flowchart TD
 
     subgraph Pipeline["MergeRAGPipeline — mergerag/pipeline.py"]
         E["1. Embed query\nSentenceTransformer\nall-MiniLM-L6-v2"]
-        R["2. Retrieve top-N\nChromaDB cosine search"]
+        R["2. Retrieve top-N\nChromaRetriever (dense)\nor HybridRetriever\n(BM25 + dense, RRF)"]
 
         subgraph Planner["3. Planner — mergerag/merge/planner.py"]
             SP["Split chunks\nstrong = top strong_k\nweak = remainder"]
@@ -50,7 +52,7 @@ flowchart TD
     subgraph Adapters["Adapters — mergerag/adapters"]
         EMB["SentenceTransformerEmbedder"]
         LLM["OllamaLLM\nqwen2.5:3b"]
-        RET["ChromaRetriever\nPersistentClient / EphemeralClient"]
+        RET["ChromaRetriever / HybridRetriever\nBM25Index + rrf_fuse"]
         RS["SQLiteRunStore\nruns.db"]
     end
 
