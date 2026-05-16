@@ -138,18 +138,19 @@ class HybridRetriever(RetrieverPort):
     def _build_bm25(self) -> BM25Index:
         try:
             return BM25Index(self._fetch_all_chunks())
-        except Exception:
+        except Exception as e:
+            logger.warning("Failed to build initial BM25 index; sparse arm disabled: %s", e)
             return BM25Index([])
 
     def index(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
         self._chroma.index(chunks, embeddings)
         try:
             self._bm25 = BM25Index(self._fetch_all_chunks())
-        except Exception:
-            logger.warning("BM25 index rebuild failed after ingest; sparse arm may be stale")
+        except Exception as e:
+            logger.warning("BM25 index rebuild failed after ingest; sparse arm may be stale: %s", e)
 
     def retrieve(self, query: Query, top_n: int) -> list[Chunk]:
-        candidates = (self._bm25_candidates or top_n) * 2
+        candidates = (self._bm25_candidates if self._bm25_candidates is not None else top_n) * 2
         dense = self._chroma.retrieve(query, candidates)
         sparse = self._bm25.retrieve(query.text, candidates)
         return rrf_fuse(dense, sparse)[:top_n]
