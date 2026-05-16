@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 from mergerag.core.models import (
-    Chunk, MergedChunk, MergePlan, Citation, RunTrace, Strategy,
+    Chunk, MergedChunk, MergePlan, Citation, RunTrace, Strategy, Query,
 )
 from mergerag.core.ports import EmbedderPort, RetrieverPort, LLMPort
 from mergerag.core.utils import cosine_similarity
@@ -77,7 +77,7 @@ class MergeRAGPipeline:
         t_embed = time.time() - t_embed_start
 
         t_retrieve_start = time.time()
-        chunks = self._retriever.retrieve(query_emb, self._top_n)
+        chunks = self._retriever.retrieve(Query(text=query, embedding=query_emb), self._top_n)
         t_retrieve = time.time() - t_retrieve_start
 
         merge_plan: MergePlan | None = None
