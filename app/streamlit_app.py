@@ -8,6 +8,29 @@ COLLECTION = "hotpot_dev_500"
 TIMEOUT_S = 120
 STRATEGIES: list[str] = ["top_k", "symmetric", "asymmetric"]
 
+COMPARISON_KEYWORDS: list[str] = [
+    # attribute comparisons
+    "who is taller", "who is older", "who is younger", "who is bigger",
+    "who was born", "who died", "who had", "who has",
+    # both/same patterns
+    "both", "the same", "same nationality", "same city",
+    "were both", "are both", "did both",
+    # shared / belong
+    "shared", "belong to", "were formed",
+    # explicit compare
+    "what is the same", "compare",
+    "more than", "less than",
+]
+
+
+def classify_question(question: str) -> tuple[str, str]:
+    """Return (question_type, strategy). Comparison → top_k, bridge → asymmetric."""
+    q_lower = question.lower()
+    for kw in COMPARISON_KEYWORDS:
+        if kw in q_lower:
+            return "comparison", "top_k"
+    return "bridge", "asymmetric"
+
 st.set_page_config(page_title="MergeRAG", layout="wide")
 st.markdown("""
 <style>
@@ -86,37 +109,73 @@ st.markdown("---")
 
 query = st.text_input("Query", placeholder="Enter a multi-hop question...")
 gold = st.text_input("Gold answer (optional)", placeholder="Leave blank to skip EM scoring")
+smart_route = st.toggle("Smart Route", key="smart_route")
 run = st.button("Run", disabled=not query.strip())
 
 if run and query.strip():
     st.session_state["results"] = {}
     st.session_state["errors"] = {}
     st.session_state["gold"] = gold
-    cols = st.columns(3)
-    for i, strategy in enumerate(STRATEGIES):
-        with cols[i]:
-            with st.spinner(f"running {strategy}..."):
-                try:
-                    data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S)
-                    st.session_state["results"][strategy] = data
-                    st.session_state["errors"][strategy] = None
-                except APIError as e:
-                    st.session_state["results"][strategy] = None
-                    st.session_state["errors"][strategy] = str(e)
-            render_column(
-                strategy,
-                st.session_state["results"].get(strategy),
-                st.session_state["errors"].get(strategy),
-                gold,
-            )
+    st.session_state["smart_route_active"] = smart_route
+
+    if smart_route:
+        q_type, strategy = classify_question(query)
+        st.session_state["smart_route_meta"] = {"type": q_type, "strategy": strategy}
+        st.markdown(f"`detected: {q_type} | strategy: {strategy}`")
+        with st.spinner(f"running {strategy}..."):
+            try:
+                data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S)
+                st.session_state["results"][strategy] = data
+                st.session_state["errors"][strategy] = None
+            except APIError as e:
+                st.session_state["results"][strategy] = None
+                st.session_state["errors"][strategy] = str(e)
+        render_column(
+            strategy,
+            st.session_state["results"].get(strategy),
+            st.session_state["errors"].get(strategy),
+            gold,
+        )
+    else:
+        st.session_state["smart_route_meta"] = None
+        cols = st.columns(3)
+        for i, strategy in enumerate(STRATEGIES):
+            with cols[i]:
+                with st.spinner(f"running {strategy}..."):
+                    try:
+                        data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S)
+                        st.session_state["results"][strategy] = data
+                        st.session_state["errors"][strategy] = None
+                    except APIError as e:
+                        st.session_state["results"][strategy] = None
+                        st.session_state["errors"][strategy] = str(e)
+                render_column(
+                    strategy,
+                    st.session_state["results"].get(strategy),
+                    st.session_state["errors"].get(strategy),
+                    gold,
+                )
 
 elif "results" in st.session_state:
-    cols = st.columns(3)
-    for i, strategy in enumerate(STRATEGIES):
-        with cols[i]:
-            render_column(
-                strategy,
-                st.session_state["results"].get(strategy),
-                st.session_state["errors"].get(strategy),
-                st.session_state.get("gold", ""),
-            )
+    if st.session_state.get("smart_route_active"):
+        meta = st.session_state.get("smart_route_meta") or {}
+        q_type = meta.get("type", "")
+        strategy = meta.get("strategy", "")
+        if q_type and strategy:
+            st.markdown(f"`detected: {q_type} | strategy: {strategy}`")
+        render_column(
+            strategy,
+            st.session_state["results"].get(strategy),
+            st.session_state["errors"].get(strategy),
+            st.session_state.get("gold", ""),
+        )
+    else:
+        cols = st.columns(3)
+        for i, strategy in enumerate(STRATEGIES):
+            with cols[i]:
+                render_column(
+                    strategy,
+                    st.session_state["results"].get(strategy),
+                    st.session_state["errors"].get(strategy),
+                    st.session_state.get("gold", ""),
+                )
