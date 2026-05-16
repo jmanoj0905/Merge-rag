@@ -103,8 +103,53 @@ class BM25Index:
         return [chunk for chunk, _ in ranked[:top_n]]
 
 
-# Stub — implemented in Task 8
+class HybridRetriever(RetrieverPort):
+    def __init__(
+        self,
+        collection_name: str = "mergerag",
+        persist_path: str | None = None,
+        bm25_candidates: int | None = None,
+    ) -> None:
+        self._chroma = ChromaRetriever(collection_name=collection_name, persist_path=persist_path)
+        self._bm25_candidates = bm25_candidates
+        self._bm25 = self._build_bm25()
 
+    def _fetch_all_chunks(self) -> list[Chunk]:
+        result = self._chroma._collection.get(
+            include=["documents", "embeddings", "metadatas"]
+        )
+        chunks = []
+        for id_, doc, emb, meta in zip(
+            result["ids"],
+            result["documents"],
+            result["embeddings"],
+            result["metadatas"],
+        ):
+            chunks.append(Chunk(
+                id=id_,
+                doc_id=meta["doc_id"],
+                text=doc,
+                score=0.0,
+                rank=0,
+                embedding=list(emb),
+            ))
+        return chunks
 
-class HybridRetriever:
-    ...
+    def _build_bm25(self) -> BM25Index:
+        try:
+            return BM25Index(self._fetch_all_chunks())
+        except Exception:
+            return BM25Index([])
+
+    def index(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
+        self._chroma.index(chunks, embeddings)
+        try:
+            self._bm25 = BM25Index(self._fetch_all_chunks())
+        except Exception:
+            logger.warning("BM25 index rebuild failed after ingest; sparse arm may be stale")
+
+    def retrieve(self, query: Query, top_n: int) -> list[Chunk]:
+        candidates = (self._bm25_candidates or top_n) * 2
+        dense = self._chroma.retrieve(query, candidates)
+        sparse = self._bm25.retrieve(query.text, candidates)
+        return rrf_fuse(dense, sparse)[:top_n]

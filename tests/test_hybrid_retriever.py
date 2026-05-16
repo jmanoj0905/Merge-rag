@@ -90,3 +90,63 @@ def test_bm25_index_rare_term_ranks_highest():
     idx = BM25Index(chunks)
     results = idx.retrieve("derrickson", top_n=3)
     assert results[0].id == "rare"
+
+
+# ── HybridRetriever ───────────────────────────────────────────────────────────
+
+def test_hybrid_retriever_rebuilds_bm25_after_index():
+    r = HybridRetriever(collection_name="test_bm25_rebuild")
+    chunks = [
+        Chunk(id="c1", doc_id="d1", text="unique xylophone text", score=0.0, rank=0, embedding=[])
+    ]
+    r.index(chunks, embeddings=[[1.0, 0.0, 0.0]])
+    bm25_texts = [c.text for c in r._bm25._chunks]
+    assert "unique xylophone text" in bm25_texts
+
+
+def test_hybrid_retriever_surfaces_keyword_match():
+    """Chunk matching by keyword (BM25) but not by vector (dense) must appear in results."""
+    r = HybridRetriever(collection_name="test_hybrid_kw")
+    chunks = [
+        Chunk(id="c_dense", doc_id="d1", text="the quick brown fox jumps over", score=0.0, rank=0, embedding=[]),
+        Chunk(id="c_sparse", doc_id="d1", text="derrickson is an american filmmaker", score=0.0, rank=1, embedding=[]),
+    ]
+    embeddings = [
+        [1.0, 0.0, 0.0],  # matches query embedding
+        [0.0, 0.0, 1.0],  # does NOT match query embedding
+    ]
+    r.index(chunks, embeddings)
+
+    # Query embedding points toward c_dense; query text matches c_sparse via BM25
+    query = Query(text="derrickson nationality", embedding=[1.0, 0.0, 0.0])
+    results = r.retrieve(query, top_n=2)
+
+    result_ids = [c.id for c in results]
+    assert "c_sparse" in result_ids  # BM25 arm surfaces the keyword match
+
+
+def test_hybrid_retriever_returns_top_n_results():
+    r = HybridRetriever(collection_name="test_hybrid_topn")
+    chunks = [
+        Chunk(id=f"c{i}", doc_id="d1", text=f"document about topic {i}", score=0.0, rank=i, embedding=[])
+        for i in range(6)
+    ]
+    embeddings = [[float(i == j) for j in range(6)] for i in range(6)]
+    r.index(chunks, embeddings)
+
+    query = Query(text="topic 0", embedding=[1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    results = r.retrieve(query, top_n=3)
+    assert len(results) == 3
+
+
+def test_hybrid_retriever_results_have_sequential_ranks():
+    r = HybridRetriever(collection_name="test_hybrid_ranks")
+    chunks = [
+        Chunk(id="a", doc_id="d1", text="alpha retrieval", score=0.0, rank=0, embedding=[]),
+        Chunk(id="b", doc_id="d1", text="beta document", score=0.0, rank=1, embedding=[]),
+    ]
+    r.index(chunks, embeddings=[[1.0, 0.0], [0.0, 1.0]])
+
+    query = Query(text="alpha", embedding=[1.0, 0.0])
+    results = r.retrieve(query, top_n=2)
+    assert [c.rank for c in results] == [0, 1]
