@@ -59,6 +59,26 @@ Asymmetric merge fires on 16% of questions. When active: merge mean=17150ms (3 L
 
 ---
 
+## Run v3 — 2026-05-16 (HybridRetriever: BM25 + dense, RRF k=60)
+
+`results/hotpot_dev_500_hybrid.json`
+
+| strategy   |   EM  |   F1  | latency_ms | tokens |   n |
+|------------|-------|-------|------------|--------|-----|
+| top_k      | 0.240 | 0.320 |       3833 |    395 | 500 |
+| symmetric  | 0.240 | 0.320 |       3219 |    406 | 500 |
+| asymmetric | 0.240 | 0.320 |       3495 |    404 | 500 |
+
+All three strategies flat at 0.240 EM / 0.320 F1. Hybrid retrieval did not improve over dense-only (v2: 0.244–0.252 EM).
+
+**Why hybrid didn't help at aggregate level.** RRF over-fetches from both arms (top_n × 2 candidates each) then clips to top_n. The BM25 arm introduces keyword-matched candidates that displace high-precision dense results more often than they repair entity recall gaps. HotpotQA's distractor paragraphs are topically similar (10 docs per question), so BM25 tends to surface plausible-but-wrong paragraphs that share surface terms with the query.
+
+**BM25 arm does fix targeted entity recall.** Smoke test confirmed: "Scott Derrickson nationality" query surfaces `Scott_Derrickson-0000` ("is an American director") at BM25 rank 2, which the dense arm misses. The gain is real but too infrequent (~few questions in 500) to move aggregate EM.
+
+**Next step candidates.** Tune `bm25_candidates` (currently `top_n × 2`) — a tighter BM25 pool (e.g. top_n only) may reduce noise. Alternatively, only activate the BM25 arm for bridge questions where entity recall matters most.
+
+---
+
 ## Key Findings
 
 **Symmetric fix (+2.2 EM, -33% latency).** Replacing LLM synthesis with concatenation fixed the underperformance. Symmetric now ties top_k on EM (0.246 vs 0.244) at comparable latency.
