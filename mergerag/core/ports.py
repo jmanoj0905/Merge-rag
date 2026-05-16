@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from mergerag.core.models import Chunk, RunScore, RunTrace
+from mergerag.core.models import Chunk, Query, RunScore, RunTrace
 
 
 class EmbedderPort(ABC):
@@ -10,8 +10,8 @@ class EmbedderPort(ABC):
 
 class RetrieverPort(ABC):
     @abstractmethod
-    def retrieve(self, query_embedding: list[float], top_n: int) -> list[Chunk]:
-        """Return top_n chunks sorted by descending similarity."""
+    def retrieve(self, query: Query, top_n: int) -> list[Chunk]:
+        """Return top_n chunks sorted by descending relevance score."""
 
     @abstractmethod
     def index(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
