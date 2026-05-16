@@ -1,6 +1,10 @@
+import logging
+
 import chromadb
-from mergerag.core.models import Chunk
+from mergerag.core.models import Chunk, Query
 from mergerag.core.ports import RetrieverPort
+
+logger = logging.getLogger(__name__)
 
 
 class ChromaRetriever(RetrieverPort):
@@ -22,9 +26,9 @@ class ChromaRetriever(RetrieverPort):
             metadatas=[{"doc_id": c.doc_id} for c in chunks],
         )
 
-    def retrieve(self, query_embedding: list[float], top_n: int) -> list[Chunk]:
+    def retrieve(self, query: Query, top_n: int) -> list[Chunk]:
         results = self._collection.query(
-            query_embeddings=[query_embedding],
+            query_embeddings=[query.embedding],
             n_results=top_n,
             include=["documents", "embeddings", "metadatas", "distances"],
         )
