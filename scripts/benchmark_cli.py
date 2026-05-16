@@ -10,7 +10,7 @@ import chromadb
 
 from mergerag.adapters.embedder import SentenceTransformerEmbedder
 from mergerag.adapters.llm import OllamaLLM
-from mergerag.adapters.retriever import ChromaRetriever
+from mergerag.adapters.retriever import ChromaRetriever, HybridRetriever
 from mergerag.adapters.run_store import SQLiteRunStore
 from mergerag.adapters.score_store import SQLiteScoreStore
 from mergerag.eval.benchmark import BenchmarkConfig, run_benchmark
@@ -54,6 +54,7 @@ def main() -> None:
     )
     parser.add_argument("--persist-path", default=None, help="Chroma persistence directory (omit for ephemeral)")
     parser.add_argument("--limit", type=int, default=None, help="Cap number of examples (e.g. 500 or 1000)")
+    parser.add_argument("--retriever", choices=["chroma", "hybrid"], default="chroma", help="Retriever backend (default: chroma)")
     args = parser.parse_args()
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
@@ -63,7 +64,10 @@ def main() -> None:
     _reset_collection(args.collection, args.persist_path)
 
     embedder = SentenceTransformerEmbedder()
-    retriever = ChromaRetriever(collection_name=args.collection, persist_path=args.persist_path)
+    if args.retriever == "hybrid":
+        retriever = HybridRetriever(collection_name=args.collection, persist_path=args.persist_path)
+    else:
+        retriever = ChromaRetriever(collection_name=args.collection, persist_path=args.persist_path)
     llm = OllamaLLM()
     run_store = SQLiteRunStore(db_path=args.db)
     score_store = SQLiteScoreStore(db_path=args.db)
