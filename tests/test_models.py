@@ -107,3 +107,11 @@ def test_run_score_auto_generates_scored_at():
     from mergerag.core.models import RunScore
     score = RunScore(run_id="r1", question_id="q1", gold_answer="Paris", em=1.0, f1=1.0)
     assert isinstance(score.scored_at, datetime)
+
+
+from mergerag.core.models import Query
+
+def test_query_holds_text_and_embedding():
+    q = Query(text="who is Ed Wood?", embedding=[0.1, 0.2, 0.3])
+    assert q.text == "who is Ed Wood?"
+    assert q.embedding == [0.1, 0.2, 0.3]

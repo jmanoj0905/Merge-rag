@@ -8,6 +8,12 @@ Strategy = Literal["top_k", "symmetric", "asymmetric"]
 
 
 @dataclass
+class Query:
+    text: str
+    embedding: list[float]
+
+
+@dataclass
 class Chunk:
     id: str
     doc_id: str
