@@ -51,7 +51,7 @@ flowchart TD
 
     subgraph Adapters["Adapters — mergerag/adapters"]
         EMB["SentenceTransformerEmbedder"]
-        LLM["OllamaLLM\nqwen2.5:3b"]
+        LLM["OllamaLLM\nqwen2.5:7b"]
         RET["ChromaRetriever / HybridRetriever\nBM25Index + rrf_fuse"]
         RS["SQLiteRunStore\nruns.db"]
     end
@@ -130,11 +130,11 @@ results/
 
 ## Setup
 
-You need Python 3.11+, [uv](https://github.com/astral-sh/uv), and [Ollama](https://ollama.com) running locally with `qwen2.5:3b` pulled.
+You need Python 3.11+, [uv](https://github.com/astral-sh/uv), and [Ollama](https://ollama.com) running locally with `qwen2.5:7b` pulled (default since v4). `qwen2.5:3b` also works and was used for benchmark runs v1–v3; switch via `OLLAMA_MODEL`.
 
 ```bash
 uv sync
-ollama pull qwen2.5:3b
+ollama pull qwen2.5:7b
 ```
 
 ## Running
@@ -203,7 +203,7 @@ The API server reads these environment variables, all optional:
 `CHROMA_PERSIST_PATH` — path to a persisted Chroma index (default: ephemeral).  
 `RUN_STORE_PATH` — SQLite path for run traces (default: `runs.db`).  
 `EMBEDDING_MODEL` — SentenceTransformer model name (default: `all-MiniLM-L6-v2`).  
-`OLLAMA_MODEL` — Ollama model name (default: `qwen2.5:3b`).  
+`OLLAMA_MODEL` — Ollama model name (default: `qwen2.5:7b`; benchmarks v1–v3 used `qwen2.5:3b`).  
 `DEFAULT_TOP_N` — candidates retrieved before merging (default: 20).  
 `DEFAULT_TOP_K` — final context window size (default: 5).  
 `DEFAULT_STRONG_K` — strong anchor count for merge planning (default: 5).  
@@ -232,6 +232,22 @@ All runs: HotpotQA distractor dev set, n=500, qwen2.5:3b.
 | asymmetric | 0.240 | 0.320 |       3495 |
 
 Hybrid EM is flat vs dense-only. The BM25 arm fixes targeted entity recall (verified on "Scott Derrickson nationality") but the RRF pool introduces noise from HotpotQA's topically similar distractor paragraphs that cancels the gain at aggregate level. See `results/benchmark_findings.md` for full analysis.
+
+**Model upgrade (v4, qwen2.5:7b, n=100)**
+
+| strategy   |   EM  |   F1  | latency_ms |
+|------------|-------|-------|------------|
+| top_k      | 0.20  | 0.27  |       4228 |
+| symmetric  | 0.23  | 0.30  |       3691 |
+| asymmetric | 0.22  | 0.26  |       4477 |
+
+Default model switched to qwen2.5:7b after the 3b model contradicted itself on multi-hop comparison questions (e.g. answering "No" to a same-nationality query while citing both subjects as American). 7b reasons correctly on clean 2-chunk contexts but is still derailed by surname-overlap distractors when the correct chunk sits beyond the default `top_k=5`. Aggregate EM at n=100 is within noise of the 3b baseline. A CoT prompt variant was tried and reverted (caused entity-name regressions on non-comparison questions). See findings doc.
+
+### Known limitation
+
+Queries that depend on disambiguating an entity by full name against same-surname distractors (e.g. multiple "Scotts" in the pool) can still fail when the correct chunk is outside the default context window. Workarounds:
+- bump `top_k` via the Streamlit `Pipeline params` sliders (7+ surfaces the chunk on the Scott_Derrickson case)
+- switch to the `hybrid` retriever for entity-name queries
 
 ---
 

@@ -1,7 +1,7 @@
 # Benchmark Findings — HotpotQA Dev Distractor, n=500
 
 **Dataset:** HotpotQA dev distractor set (10 context docs per question, only 2 supporting)  
-**Model:** qwen2.5:3b via Ollama  
+**Model:** qwen2.5:3b (v1–v3), qwen2.5:7b (v4) via Ollama  
 **Fixture:** `data/hotpotqa_dev_distractor.json`, first 500 examples (404 bridge, 96 comparison)
 
 ---
@@ -76,6 +76,36 @@ All three strategies flat at 0.240 EM / 0.320 F1. Hybrid retrieval did not impro
 **BM25 arm does fix targeted entity recall.** Smoke test confirmed: "Scott Derrickson nationality" query surfaces `Scott_Derrickson-0000` ("is an American director") at BM25 rank 2, which the dense arm misses. The gain is real but too infrequent (~few questions in 500) to move aggregate EM.
 
 **Next step candidates.** Tune `bm25_candidates` (currently `top_n × 2`) — a tighter BM25 pool (e.g. top_n only) may reduce noise. Alternatively, only activate the BM25 arm for bridge questions where entity recall matters most.
+
+---
+
+## Run v4 — 2026-05-17 (qwen2.5:7b upgrade, n=100)
+
+`results/hotpot_dev_100_cot_7b.json`
+
+| strategy   |   EM  |   F1  | latency_ms | tokens |   n |
+|------------|-------|-------|------------|--------|-----|
+| top_k      | 0.20  | 0.27  |       4228 |    398 | 100 |
+| symmetric  | 0.23  | 0.30  |       3691 |    417 | 100 |
+| asymmetric | 0.22  | 0.26  |       4477 |    410 | 100 |
+
+n=100 noise ±0.05. Aggregate roughly flat vs 3b baseline. Model swap alone not a clear win at this n.
+
+**Motivating case.** For `"Were Scott Derrickson and Ed Wood of the same nationality?"` (gold: `yes`), the 3b model answered `No` even with both relevant chunks in context. Direct inspection showed 3b contradicting itself: "No, ... Scott Derrickson is American, while Ed Wood was also American." Pure reasoning failure — retrieval and prompt were correct.
+
+**7b on clean 2-chunk context** → `Yes` ✓.  
+**7b on full pipeline context (8 chunks with `John_Scott_(ice_hockey)` Canadian distractor)** → `No` ✗.
+
+Distractors with overlapping surnames (multiple "Scotts" in the HotpotQA pool) confuse even 7b. Scott_Derrickson surfaces at hybrid rank 6, so the default `top_k=5` cuts it off and forces a wrong answer regardless of model size.
+
+### CoT prompt experiment (reverted)
+
+Attempted an entity-grounded chain-of-thought template (reason per entity, then `Final: <answer>`). Fixed Scott_Derrickson on a manual run, but n=100 sweep showed regressions:
+- Model copied entity names as final answers (`Janet_Waldo` instead of `Chief of Protocol`).
+- Citation parsing broke when 7b omitted brackets in the CoT format.
+- Aggregate EM dropped vs the non-CoT baseline.
+
+Reverted prompt and answer-extraction logic; kept the 7b model upgrade. Scott_Derrickson-style cases (entity disambiguation under surname-overlap distractors, with the correct chunk beyond default `top_k`) remain a known limitation. Workarounds: bump `top_k` to 7+ via the UI sliders, or use the hybrid retriever for entity-name queries.
 
 ---
 
