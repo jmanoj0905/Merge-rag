@@ -8,6 +8,21 @@ COLLECTION = "hotpot_dev_500"
 TIMEOUT_S = 120
 STRATEGIES: list[str] = ["top_k", "symmetric", "asymmetric"]
 
+DEFAULTS: dict = {
+    "smart_route": False,
+    "retriever_choice": "chroma",
+    "top_n": 10,
+    "top_k": 5,
+    "strong_k": 5,
+    "token_budget": 2048,
+    "asymmetric_max_ops": 1,
+}
+
+
+def _apply_defaults() -> None:
+    for k, v in DEFAULTS.items():
+        st.session_state[k] = v
+
 COMPARISON_KEYWORDS: list[str] = [
     # attribute comparisons
     "who is taller", "who is older", "who is younger", "who is bigger",
@@ -107,8 +122,17 @@ st.markdown("# MERGERAG")
 st.markdown(f"collection: `{COLLECTION}`")
 st.markdown("---")
 
+# Seed defaults on first render
+for k, v in DEFAULTS.items():
+    if k not in st.session_state:
+        st.session_state[k] = v
+
+if st.session_state.pop("_reset", False):
+    _apply_defaults()
+
 query = st.text_input("Query", placeholder="Enter a multi-hop question...")
 gold = st.text_input("Gold answer (optional)", placeholder="Leave blank to skip EM scoring")
+
 col_a, col_b = st.columns(2)
 with col_a:
     smart_route = st.toggle("Smart Route", key="smart_route")
@@ -116,11 +140,34 @@ with col_b:
     retriever_choice = st.radio(
         "Retriever",
         options=["chroma", "hybrid"],
-        index=0,
         horizontal=True,
         key="retriever_choice",
     )
-run = st.button("Run", disabled=not query.strip())
+
+with st.expander("Pipeline params", expanded=False):
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.number_input("top_n (retrieval pool)", min_value=1, max_value=100, step=1, key="top_n")
+        st.number_input("token_budget", min_value=128, max_value=8192, step=128, key="token_budget")
+    with c2:
+        st.number_input("top_k (final context)", min_value=1, max_value=50, step=1, key="top_k")
+        st.number_input("asymmetric_max_ops", min_value=0, max_value=10, step=1, key="asymmetric_max_ops")
+    with c3:
+        st.number_input("strong_k", min_value=1, max_value=50, step=1, key="strong_k")
+
+run_col, reset_col = st.columns([1, 1])
+with run_col:
+    run = st.button("Run", disabled=not query.strip(), use_container_width=True)
+with reset_col:
+    if st.button("Reset to defaults", use_container_width=True):
+        st.session_state["_reset"] = True
+        st.rerun()
+
+top_n = st.session_state["top_n"]
+top_k = st.session_state["top_k"]
+strong_k = st.session_state["strong_k"]
+token_budget = st.session_state["token_budget"]
+asymmetric_max_ops = st.session_state["asymmetric_max_ops"]
 
 if run and query.strip():
     st.session_state["results"] = {}
@@ -134,7 +181,13 @@ if run and query.strip():
         st.markdown(f"`detected: {q_type} | strategy: {strategy}`")
         with st.spinner(f"running {strategy}..."):
             try:
-                data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S, retriever=retriever_choice)
+                data = call_query(
+                    query, strategy, COLLECTION, API_BASE, TIMEOUT_S,
+                    retriever=retriever_choice,
+                    top_n=top_n, top_k=top_k, strong_k=strong_k,
+                    token_budget=token_budget,
+                    asymmetric_max_ops=asymmetric_max_ops,
+                )
                 st.session_state["results"][strategy] = data
                 st.session_state["errors"][strategy] = None
             except APIError as e:
@@ -153,7 +206,13 @@ if run and query.strip():
             with cols[i]:
                 with st.spinner(f"running {strategy}..."):
                     try:
-                        data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S, retriever=retriever_choice)
+                        data = call_query(
+                    query, strategy, COLLECTION, API_BASE, TIMEOUT_S,
+                    retriever=retriever_choice,
+                    top_n=top_n, top_k=top_k, strong_k=strong_k,
+                    token_budget=token_budget,
+                    asymmetric_max_ops=asymmetric_max_ops,
+                )
                         st.session_state["results"][strategy] = data
                         st.session_state["errors"][strategy] = None
                     except APIError as e:
