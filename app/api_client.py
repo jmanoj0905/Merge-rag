@@ -12,8 +12,12 @@ def call_query(
     collection_name: str,
     base_url: str,
     timeout: int = 120,
+    retriever: str | None = None,
 ) -> dict:
     """POST /query and return the parsed JSON response dict."""
+    params: dict = {}
+    if retriever:
+        params["retriever"] = retriever
     try:
         resp = requests.post(
             f"{base_url}/query",
@@ -21,7 +25,7 @@ def call_query(
                 "query": query,
                 "strategy": strategy,
                 "collection_name": collection_name,
-                "params": {},
+                "params": params,
             },
             timeout=timeout,
         )

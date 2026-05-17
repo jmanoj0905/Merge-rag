@@ -11,6 +11,8 @@ class PipelineParams(BaseModel):
     top_k: int | None = None
     strong_k: int | None = None
     token_budget: int | None = None
+    asymmetric_max_ops: int | None = None
+    retriever: Literal["chroma", "hybrid"] | None = None
 
 
 class QueryRequest(BaseModel):

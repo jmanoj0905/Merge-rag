@@ -109,7 +109,17 @@ st.markdown("---")
 
 query = st.text_input("Query", placeholder="Enter a multi-hop question...")
 gold = st.text_input("Gold answer (optional)", placeholder="Leave blank to skip EM scoring")
-smart_route = st.toggle("Smart Route", key="smart_route")
+col_a, col_b = st.columns(2)
+with col_a:
+    smart_route = st.toggle("Smart Route", key="smart_route")
+with col_b:
+    retriever_choice = st.radio(
+        "Retriever",
+        options=["chroma", "hybrid"],
+        index=0,
+        horizontal=True,
+        key="retriever_choice",
+    )
 run = st.button("Run", disabled=not query.strip())
 
 if run and query.strip():
@@ -124,7 +134,7 @@ if run and query.strip():
         st.markdown(f"`detected: {q_type} | strategy: {strategy}`")
         with st.spinner(f"running {strategy}..."):
             try:
-                data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S)
+                data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S, retriever=retriever_choice)
                 st.session_state["results"][strategy] = data
                 st.session_state["errors"][strategy] = None
             except APIError as e:
@@ -143,7 +153,7 @@ if run and query.strip():
             with cols[i]:
                 with st.spinner(f"running {strategy}..."):
                     try:
-                        data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S)
+                        data = call_query(query, strategy, COLLECTION, API_BASE, TIMEOUT_S, retriever=retriever_choice)
                         st.session_state["results"][strategy] = data
                         st.session_state["errors"][strategy] = None
                     except APIError as e:

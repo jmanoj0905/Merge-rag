@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic_settings import BaseSettings
 
@@ -12,6 +13,8 @@ class Settings(BaseSettings):
     default_top_k: int = 5
     default_strong_k: int = 5
     default_token_budget: int = 2048
+    default_asymmetric_max_ops: int = 1
+    default_retriever: Literal["chroma", "hybrid"] = "chroma"
 
 
 @lru_cache
