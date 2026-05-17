@@ -46,6 +46,18 @@ def test_asymmetric_primary_is_strong_chunk():
         assert op.primary.id in strong_ids
 
 
+def test_asymmetric_plan_respects_max_ops():
+    chunks = _chunks(10)
+    result = plan(chunks, strategy="asymmetric", strong_k=3, asymmetric_max_ops=1)
+    assert len(result.operations) == 1
+
+
+def test_asymmetric_plan_allows_zero_max_ops():
+    chunks = _chunks(10)
+    result = plan(chunks, strategy="asymmetric", strong_k=3, asymmetric_max_ops=0)
+    assert result.operations == []
+
+
 def test_fewer_chunks_than_strong_k_returns_empty_plan():
     chunks = _chunks(2)
     result = plan(chunks, strategy="symmetric", strong_k=5)

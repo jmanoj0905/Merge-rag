@@ -24,6 +24,20 @@ _FIXTURE = [
     }
 ]
 
+_TWO_QUESTION_FIXTURE = [
+    *_FIXTURE,
+    {
+        "_id": "q2",
+        "question": "What city is named here?",
+        "answer": "Paris",
+        "supporting_facts": [["Paris", 0]],
+        "context": [
+            ["Paris", ["Paris is the capital of France."]],
+            ["Berlin", ["Berlin is the capital of Germany."]],
+        ],
+    },
+]
+
 
 def _write_fixture(data: list) -> Path:
     fd, path = tempfile.mkstemp(suffix=".json")
@@ -44,6 +58,27 @@ def _mock_retriever() -> RetrieverPort:
         Chunk(id=f"c{i}", doc_id="d1", text=f"text {i}", score=1.0 - i * 0.1, rank=i, embedding=[1.0, 0.0])
         for i in range(5)
     ]
+    return r
+
+
+def _mock_retriever_with_one_active_asymmetric_merge() -> RetrieverPort:
+    r = MagicMock(spec=RetrieverPort)
+
+    active_chunks = [
+        Chunk(id=f"a{i}", doc_id="d1", text=f"active {i}", score=1.0 - i * 0.1, rank=i, embedding=[1.0, 0.0])
+        for i in range(5)
+    ]
+    inactive_chunks = [
+        Chunk(id=f"i{i}", doc_id=f"d{i}", text=f"inactive {i}", score=1.0 - i * 0.1, rank=i, embedding=[1.0, 0.0])
+        for i in range(5)
+    ]
+
+    def retrieve(query, top_n):
+        if "country" in query.text:
+            return active_chunks
+        return inactive_chunks
+
+    r.retrieve.side_effect = retrieve
     return r
 
 
@@ -175,3 +210,25 @@ def test_run_benchmark_failed_run_records_zero_scores_and_continues():
     assert len(result.results) == 1
     assert result.results[0].em == 0.0
     assert result.results[0].f1 == 0.0
+
+
+def test_run_benchmark_can_keep_only_active_asymmetric_merge_examples():
+    fixture_path = _write_fixture(_TWO_QUESTION_FIXTURE)
+    run_store, score_store = _make_stores()
+    config = BenchmarkConfig(
+        fixture_path=fixture_path,
+        collection_name="test_col",
+        strategies=["top_k", "asymmetric"],
+        strong_k=3,
+        active_asymmetric_only=True,
+    )
+    result = run_benchmark(
+        config,
+        _mock_embedder(),
+        _mock_retriever_with_one_active_asymmetric_merge(),
+        _mock_llm(),
+        run_store,
+        score_store,
+    )
+    assert len(result.results) == 2
+    assert {r.question_id for r in result.results} == {"q1"}

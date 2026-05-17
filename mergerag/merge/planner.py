@@ -8,6 +8,7 @@ def plan(
     chunks: list[Chunk],
     strategy: Literal["symmetric", "asymmetric"],
     strong_k: int,
+    asymmetric_max_ops: int = 1,
 ) -> MergePlan:
     """Split chunks by rank and build a MergePlan. No I/O."""
     strong = chunks[:strong_k]
@@ -19,6 +20,6 @@ def plan(
     if strategy == "symmetric":
         ops = pair_weak_chunks(weak)
     else:
-        ops = assign_to_anchors(weak, strong)
+        ops = assign_to_anchors(weak, strong, max_ops=max(0, asymmetric_max_ops))
 
     return MergePlan(operations=ops)

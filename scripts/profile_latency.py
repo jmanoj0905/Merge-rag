@@ -52,6 +52,12 @@ def main() -> None:
     parser.add_argument("--collection", default="hotpot_dev_500")
     parser.add_argument("--persist-path", default="data/chroma")
     parser.add_argument("--model", default="qwen2.5:3b")
+    parser.add_argument(
+        "--asymmetric-max-ops",
+        type=int,
+        default=1,
+        help="Maximum asymmetric merge LLM calls per query (default: 1)",
+    )
     args = parser.parse_args()
 
     capture = StageCapture()
@@ -65,7 +71,12 @@ def main() -> None:
         collection_name=args.collection, persist_path=args.persist_path
     )
     llm = OllamaLLM(model=args.model)
-    pipeline = MergeRAGPipeline(embedder=embedder, retriever=retriever, llm=llm)
+    pipeline = MergeRAGPipeline(
+        embedder=embedder,
+        retriever=retriever,
+        llm=llm,
+        asymmetric_max_ops=args.asymmetric_max_ops,
+    )
 
     examples = json.loads(Path(args.fixture).read_text())[:args.n]
     print(f"Profiling {args.n} questions across 3 strategies ({args.n * 3} runs)...")
@@ -101,8 +112,13 @@ def main() -> None:
     print(f"Asymmetric re_embed fired: {re_embed_fired}/{len(asym_rows)} questions")
 
     if merge_fired:
-        merge_times = [r["merge"] for r in asym_rows if r["merge"] > 0]
-        print(f"Asymmetric merge_ms when active: mean={mean(merge_times):.0f} median={median(merge_times):.0f}")
+        merge_times = sorted(r["merge"] for r in asym_rows if r["merge"] > 0)
+        p95 = merge_times[max(0, int(len(merge_times) * 0.95) - 1)]
+        print(
+            f"Asymmetric merge_ms when active: mean={mean(merge_times):.0f} "
+            f"median={median(merge_times):.0f} p95={p95:.0f} max={max(merge_times):.0f}"
+        )
+        print(f"Asymmetric merge_ms samples: {[f'{t:.0f}' for t in merge_times]}")
 
     if re_embed_fired:
         re_times = [r["re_embed"] for r in asym_rows if r["re_embed"] > 0]

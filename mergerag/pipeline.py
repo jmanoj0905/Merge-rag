@@ -55,6 +55,7 @@ class MergeRAGPipeline:
         top_k: int = 5,
         strong_k: int = 5,
         token_budget: int = 2048,
+        asymmetric_max_ops: int = 1,
     ):
         self._embedder = embedder
         self._retriever = retriever
@@ -63,6 +64,7 @@ class MergeRAGPipeline:
         self._top_k = top_k
         self._strong_k = strong_k
         self._token_budget = token_budget
+        self._asymmetric_max_ops = asymmetric_max_ops
 
     def run(
         self,
@@ -87,7 +89,12 @@ class MergeRAGPipeline:
         if strategy == "top_k":
             final_context: list[Chunk | MergedChunk] = chunks[: self._top_k]
         else:
-            merge_plan = planner.plan(chunks, strategy, self._strong_k)
+            merge_plan = planner.plan(
+                chunks,
+                strategy,
+                self._strong_k,
+                asymmetric_max_ops=self._asymmetric_max_ops,
+            )
 
             t_merge_start = time.time()
             merged = executor.execute(merge_plan, query, self._llm)
@@ -139,5 +146,6 @@ class MergeRAGPipeline:
                 "top_k": self._top_k,
                 "strong_k": self._strong_k,
                 "token_budget": self._token_budget,
+                "asymmetric_max_ops": self._asymmetric_max_ops,
             },
         )

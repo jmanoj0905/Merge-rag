@@ -69,6 +69,34 @@ def test_asymmetric_run_produces_merged_chunks():
     assert len(trace.merged_chunks) > 0
 
 
+def test_asymmetric_run_defaults_to_one_merge_llm_call():
+    llm = _mock_llm()
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=_mock_retriever(n=10),
+        llm=llm,
+        top_n=10, top_k=3, strong_k=3,
+    )
+    trace = pipeline.run("what is X?", strategy="asymmetric")
+    assert len(trace.merge_plan.operations) == 1
+    assert trace.config["asymmetric_max_ops"] == 1
+    assert llm.complete.call_count == 2  # one merge synthesis + one final answer
+
+
+def test_asymmetric_run_can_raise_merge_llm_call_cap():
+    llm = _mock_llm()
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=_mock_retriever(n=10),
+        llm=llm,
+        top_n=10, top_k=3, strong_k=3,
+        asymmetric_max_ops=3,
+    )
+    trace = pipeline.run("what is X?", strategy="asymmetric")
+    assert len(trace.merge_plan.operations) == 3
+    assert llm.complete.call_count == 4  # three merge syntheses + one final answer
+
+
 def test_run_trace_has_latency():
     pipeline = MergeRAGPipeline(
         embedder=_mock_embedder(),
@@ -112,3 +140,4 @@ def test_run_populates_config_with_pipeline_params():
     assert trace.config["top_k"] == 4
     assert trace.config["strong_k"] == 3
     assert trace.config["token_budget"] == 1024
+    assert trace.config["asymmetric_max_ops"] == 1

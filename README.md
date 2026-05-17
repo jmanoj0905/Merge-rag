@@ -8,7 +8,7 @@ When a query arrives, MergeRAG embeds it, retrieves the top-N candidates, then d
 
 **Retrieval** can use `ChromaRetriever` (dense cosine search only) or `HybridRetriever` (BM25 sparse + Chroma dense, fused via Reciprocal Rank Fusion). Hybrid retrieval fixes entity-name recall gaps where dense similarity alone fails — e.g. a query for "Scott Derrickson nationality" that the dense arm misses is surfaced at rank 2 by the BM25 arm.
 
-**Three merge strategies** are supported. `top_k` is the plain baseline — no merging, just the highest-scoring chunks. `symmetric` pairs weak chunks from the same document together via concatenation. `asymmetric` anchors each weak chunk to its nearest strong same-doc chunk and synthesizes them with a dedicated LLM call, capped at three operations to bound latency.
+**Three merge strategies** are supported. `top_k` is the plain baseline — no merging, just the highest-scoring chunks. `symmetric` pairs weak chunks from the same document together via concatenation. `asymmetric` anchors each weak chunk to its nearest strong same-doc chunk and synthesizes it with a dedicated LLM call, capped at one operation by default to bound tail latency. Use `--asymmetric-max-ops 3` to reproduce older benchmark settings.
 
 On HotpotQA (n=500, qwen2.5:3b), asymmetric beats the top_k baseline by +1.0 EM and +1.1 F1 at roughly 42% latency overhead. Symmetric slightly underperforms — adjacent same-doc chunks tend to be topically adjacent but not complementary, producing noisier merged context.
 
@@ -36,7 +36,7 @@ flowchart TD
         subgraph Strategies["4. Strategy"]
             TK["top_k\nno merge"]
             SYM["symmetric\npair_weak_chunks()\nsame-doc pairs\nconcatenation"]
-            ASYM["asymmetric\nassign_to_anchors()\nweak → nearest strong anchor\nLLM synthesis\nmax_ops=3"]
+            ASYM["asymmetric\nassign_to_anchors()\nweak → nearest strong anchor\nLLM synthesis\nmax_ops=1 default"]
         end
 
         subgraph Executor["5. Executor — mergerag/merge/executor.py"]
@@ -171,6 +171,19 @@ uv run python scripts/benchmark_cli.py \
   --output results/hotpot_dev_500.json
 ```
 
+Run a development benchmark only on examples where asymmetric would actually merge:
+
+```bash
+uv run python scripts/benchmark_cli.py \
+  --fixture data/hotpotqa_dev_distractor.json \
+  --collection hotpot_dev_500_active \
+  --limit 500 \
+  --persist-path data/chroma \
+  --retriever hybrid \
+  --active-asymmetric-only \
+  --output results/hotpot_dev_500_active.json
+```
+
 Profile per-stage latency:
 
 ```bash
@@ -193,7 +206,8 @@ The API server reads these environment variables, all optional:
 `OLLAMA_MODEL` — Ollama model name (default: `qwen2.5:3b`).  
 `DEFAULT_TOP_N` — candidates retrieved before merging (default: 20).  
 `DEFAULT_TOP_K` — final context window size (default: 5).  
-`DEFAULT_STRONG_K` — strong anchor count for merge planning (default: 5).
+`DEFAULT_STRONG_K` — strong anchor count for merge planning (default: 5).  
+`DEFAULT_ASYMMETRIC_MAX_OPS` — max asymmetric merge LLM calls per query (default: 1).
 
 ## Benchmark results
 

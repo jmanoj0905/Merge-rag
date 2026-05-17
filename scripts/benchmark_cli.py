@@ -55,6 +55,17 @@ def main() -> None:
     parser.add_argument("--persist-path", default=None, help="Chroma persistence directory (omit for ephemeral)")
     parser.add_argument("--limit", type=int, default=None, help="Cap number of examples (e.g. 500 or 1000)")
     parser.add_argument("--retriever", choices=["chroma", "hybrid"], default="chroma", help="Retriever backend (default: chroma)")
+    parser.add_argument(
+        "--asymmetric-max-ops",
+        type=int,
+        default=1,
+        help="Maximum asymmetric merge LLM calls per query (default: 1)",
+    )
+    parser.add_argument(
+        "--active-asymmetric-only",
+        action="store_true",
+        help="Benchmark only examples where asymmetric planning creates at least one merge op",
+    )
     args = parser.parse_args()
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
@@ -77,6 +88,8 @@ def main() -> None:
         collection_name=args.collection,
         strategies=args.strategies,
         limit=args.limit,
+        asymmetric_max_ops=args.asymmetric_max_ops,
+        active_asymmetric_only=args.active_asymmetric_only,
     )
 
     result = run_benchmark(config, embedder, retriever, llm, run_store, score_store)
@@ -87,6 +100,8 @@ def main() -> None:
         "ran_at": result.ran_at.isoformat(),
         "fixture": str(config.fixture_path),
         "collection": config.collection_name,
+        "active_asymmetric_only": config.active_asymmetric_only,
+        "asymmetric_max_ops": config.asymmetric_max_ops,
         "summary": {
             s: {
                 "em_mean": stats.em_mean,

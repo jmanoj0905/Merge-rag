@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from statistics import mean
 
-from mergerag.core.models import RunScore, Strategy
+from mergerag.core.models import Query, RunScore, Strategy
 from mergerag.core.ports import (
     EmbedderPort,
     LLMPort,
@@ -21,6 +21,7 @@ from mergerag.core.ports import (
 from mergerag.eval.scorer import exact_match, f1
 from mergerag.ingestion.ingest import ingest_document
 from mergerag.pipeline import MergeRAGPipeline
+from mergerag.merge import planner
 
 _BRACKET_RE = re.compile(r"\[([^\]]{1,120})\]")
 _CITATION_RE = re.compile(r"\[[^\]]{1,120}\]")
@@ -63,6 +64,8 @@ class BenchmarkConfig:
     top_k: int = 5
     strong_k: int = 5
     token_budget: int = 2048
+    asymmetric_max_ops: int = 1
+    active_asymmetric_only: bool = False
     limit: int | None = None
 
 
@@ -149,6 +152,29 @@ def _compute_summary(results: list[RunResult], strategies: list[Strategy]) -> di
     return summary
 
 
+def _filter_active_asymmetric_examples(
+    examples: list[dict],
+    embedder: EmbedderPort,
+    retriever: RetrieverPort,
+    config: BenchmarkConfig,
+) -> list[dict]:
+    """Keep examples where asymmetric planning would create at least one merge op."""
+    active: list[dict] = []
+    for example in examples:
+        question = example.get("question", "")
+        query_emb = embedder.embed([question])[0]
+        chunks = retriever.retrieve(Query(text=question, embedding=query_emb), config.top_n)
+        merge_plan = planner.plan(
+            chunks,
+            strategy="asymmetric",
+            strong_k=config.strong_k,
+            asymmetric_max_ops=config.asymmetric_max_ops,
+        )
+        if merge_plan.operations:
+            active.append(example)
+    return active
+
+
 def run_benchmark(
     config: BenchmarkConfig,
     embedder: EmbedderPort,
@@ -171,7 +197,11 @@ def run_benchmark(
         top_k=config.top_k,
         strong_k=config.strong_k,
         token_budget=config.token_budget,
+        asymmetric_max_ops=config.asymmetric_max_ops,
     )
+
+    if config.active_asymmetric_only:
+        examples = _filter_active_asymmetric_examples(examples, embedder, retriever, config)
 
     results: list[RunResult] = []
     total = len(examples)
