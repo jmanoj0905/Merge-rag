@@ -12,6 +12,14 @@ def _make_chunk(id_: str, rank: int) -> Chunk:
     )
 
 
+def _make_text_chunk(id_: str, rank: int, text: str) -> Chunk:
+    return Chunk(
+        id=id_, doc_id="d1", text=text,
+        score=1.0 - rank * 0.05, rank=rank,
+        embedding=[1.0, 0.0],
+    )
+
+
 def _mock_embedder() -> EmbedderPort:
     e = MagicMock(spec=EmbedderPort)
     e.embed.side_effect = lambda texts: [[1.0, 0.0]] * len(texts)
@@ -141,3 +149,41 @@ def test_run_populates_config_with_pipeline_params():
     assert trace.config["strong_k"] == 3
     assert trace.config["token_budget"] == 1024
     assert trace.config["asymmetric_max_ops"] == 1
+
+
+def test_top_k_respects_token_budget():
+    retriever = MagicMock(spec=RetrieverPort)
+    retriever.retrieve.return_value = [
+        _make_text_chunk("c0", 0, "one two three"),
+        _make_text_chunk("c1", 1, "four five six"),
+        _make_text_chunk("c2", 2, "seven eight nine"),
+    ]
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=retriever,
+        llm=_mock_llm(),
+        top_n=3,
+        top_k=3,
+        token_budget=4,
+    )
+
+    trace = pipeline.run("q", strategy="top_k")
+
+    assert [c.id for c in trace.final_context] == ["c0"]
+    assert trace.token_count == 3
+
+
+def test_citations_are_limited_to_final_context_ids():
+    llm = MagicMock(spec=LLMPort)
+    llm.complete.return_value = "Answer cites real and fake chunks. [c0, missing]"
+    pipeline = MergeRAGPipeline(
+        embedder=_mock_embedder(),
+        retriever=_mock_retriever(n=2),
+        llm=llm,
+        top_n=2,
+        top_k=1,
+    )
+
+    trace = pipeline.run("q", strategy="top_k")
+
+    assert trace.citations[0].chunk_ids == ["c0"]

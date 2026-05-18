@@ -5,11 +5,26 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, UploadFile
 
 from mergerag.adapters.retriever import ChromaRetriever
 from mergerag.api.config import Settings
-from mergerag.api.deps import get_embedder, get_settings_dep
+from mergerag.api.deps import (
+    get_chroma_client,
+    get_embedder,
+    get_settings_dep,
+    refresh_hybrid_cache,
+)
 from mergerag.api.schemas import IngestResponse
 from mergerag.ingestion import ingest_document
 
 router = APIRouter()
+
+
+async def _read_upload_limited(file: UploadFile, max_bytes: int) -> bytes:
+    contents = await file.read(max_bytes + 1)
+    if len(contents) > max_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Uploaded file exceeds {max_bytes} bytes",
+        )
+    return contents
 
 
 @router.post("/ingest", response_model=IngestResponse)
@@ -38,12 +53,13 @@ async def ingest(
     try:
         with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
             tmp_path = tmp.name
-            contents = await file.read()
+            contents = await _read_upload_limited(file, settings.max_upload_bytes)
             tmp.write(contents)
 
         retriever = ChromaRetriever(
             collection_name=collection_name,
             persist_path=settings.chroma_persist_path,
+            client=get_chroma_client(request),
         )
         embedder = get_embedder(request)
 
@@ -53,6 +69,7 @@ async def ingest(
             retriever=retriever,
             doc_id=resolved_doc_id,
         )
+        refresh_hybrid_cache(collection_name, settings.chroma_persist_path)
     finally:
         if tmp_path is not None:
             Path(tmp_path).unlink(missing_ok=True)

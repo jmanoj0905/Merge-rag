@@ -1,18 +1,26 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PositiveInt, model_validator
 
 from mergerag.core.models import Strategy
 
 
 # Request models
 class PipelineParams(BaseModel):
-    top_n: int | None = None
-    top_k: int | None = None
-    strong_k: int | None = None
-    token_budget: int | None = None
-    asymmetric_max_ops: int | None = None
+    top_n: PositiveInt | None = None
+    top_k: PositiveInt | None = None
+    strong_k: PositiveInt | None = None
+    token_budget: PositiveInt | None = None
+    asymmetric_max_ops: int | None = Field(default=None, ge=0)
     retriever: Literal["chroma", "hybrid"] | None = None
+
+    @model_validator(mode="after")
+    def validate_rank_bounds(self) -> "PipelineParams":
+        if self.top_n is not None and self.top_k is not None and self.top_k > self.top_n:
+            raise ValueError("top_k must be less than or equal to top_n")
+        if self.top_n is not None and self.strong_k is not None and self.strong_k > self.top_n:
+            raise ValueError("strong_k must be less than or equal to top_n")
+        return self
 
 
 class QueryRequest(BaseModel):

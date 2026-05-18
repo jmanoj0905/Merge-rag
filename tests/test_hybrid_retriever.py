@@ -92,6 +92,16 @@ def test_bm25_index_rare_term_ranks_highest():
     assert results[0].id == "rare"
 
 
+def test_bm25_index_normalizes_punctuation():
+    chunks = [
+        Chunk(id="match", doc_id="d1", text="Scott Derrickson's nationality is American.", score=0.0, rank=0, embedding=[]),
+        Chunk(id="other", doc_id="d1", text="A different filmmaker biography.", score=0.0, rank=1, embedding=[]),
+    ]
+    idx = BM25Index(chunks)
+    results = idx.retrieve("Derrickson nationality?", top_n=1)
+    assert results[0].id == "match"
+
+
 # ── HybridRetriever ───────────────────────────────────────────────────────────
 
 def test_hybrid_retriever_rebuilds_bm25_after_index():

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     default_token_budget: int = 2048
     default_asymmetric_max_ops: int = 1
     default_retriever: Literal["chroma", "hybrid"] = "chroma"
+    max_upload_bytes: int = 10_000_000
 
 
 @lru_cache

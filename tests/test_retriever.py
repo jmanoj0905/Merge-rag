@@ -53,3 +53,15 @@ def test_retrieved_chunks_have_correct_rank():
     assert results[0].rank == 0
     assert results[1].rank == 1
     assert results[2].rank == 2
+
+
+def test_index_upserts_existing_chunk_ids():
+    r = ChromaRetriever(collection_name="test_col_upsert")
+    chunks, embeddings = _chunks_and_embeddings()
+    r.index(chunks[:1], embeddings[:1])
+
+    updated = [Chunk(id="c1", doc_id="d1", text="Updated Paris text.", score=0.0, rank=0)]
+    r.index(updated, embeddings[:1])
+
+    results = r.retrieve(Query(text="Paris", embedding=[1.0, 0.0, 0.0]), top_n=1)
+    assert results[0].text == "Updated Paris text."

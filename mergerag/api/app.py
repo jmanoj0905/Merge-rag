@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from mergerag.adapters.embedder import SentenceTransformerEmbedder
 from mergerag.adapters.llm import OllamaLLM
 from mergerag.adapters.run_store import SQLiteRunStore
+from mergerag.api.chroma import make_chroma_client
 from mergerag.api.config import get_settings
 from mergerag.api.routes import query as query_router
 from mergerag.api.routes import ingest as ingest_router
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
     app.state.llm = OllamaLLM(settings.ollama_model)
     logger.info("Initialising run store: %s", settings.run_store_path)
     app.state.run_store = SQLiteRunStore(settings.run_store_path)
+    app.state.chroma_client = make_chroma_client(settings.chroma_persist_path)
     logger.info("Startup complete")
     yield
 

@@ -19,7 +19,7 @@ def _count_tokens(items: list[Chunk | MergedChunk]) -> int:
     return sum(len(item.text.split()) for item in items)
 
 
-def _parse_citations(answer: str) -> list[Citation]:
+def _parse_citations(answer: str, allowed_ids: set[str]) -> list[Citation]:
     citations: list[Citation] = []
     sentences = re.split(r"(?<=[.!?])\s+", answer.strip())
     for sentence in sentences:
@@ -27,6 +27,7 @@ def _parse_citations(answer: str) -> list[Citation]:
             cid.strip()
             for match in re.findall(r"\[([^\]]+)\]", sentence)
             for cid in match.split(",")
+            if cid.strip() in allowed_ids
         ]
         if ids:
             citations.append(Citation(sentence=sentence, chunk_ids=ids))
@@ -42,7 +43,25 @@ def _generate_answer(
     context_text = "\n\n".join(f"[{item.id}]\n{item.text}" for item in context)
     prompt = template.format(query=query, context=context_text)
     answer = llm.complete(prompt, max_tokens=1024)
-    return answer, _parse_citations(answer)
+    return answer, _parse_citations(answer, {item.id for item in context})
+
+
+def _within_token_budget(
+    items: list[Chunk | MergedChunk],
+    token_budget: int,
+) -> list[Chunk | MergedChunk]:
+    if token_budget <= 0:
+        return items
+
+    selected: list[Chunk | MergedChunk] = []
+    used = 0
+    for item in items:
+        item_tokens = len(item.text.split())
+        if selected and used + item_tokens > token_budget:
+            continue
+        selected.append(item)
+        used += item_tokens
+    return selected
 
 
 class MergeRAGPipeline:
@@ -87,7 +106,10 @@ class MergeRAGPipeline:
         t_merge = t_re_embed = t_rerank = 0.0
 
         if strategy == "top_k":
-            final_context: list[Chunk | MergedChunk] = chunks[: self._top_k]
+            final_context: list[Chunk | MergedChunk] = _within_token_budget(
+                chunks[: self._top_k],
+                self._token_budget,
+            )
         else:
             merge_plan = planner.plan(
                 chunks,
@@ -108,10 +130,16 @@ class MergeRAGPipeline:
                     m.embedding = emb
 
             t_rerank_start = time.time()
-            pool: list[Chunk | MergedChunk] = list(chunks[: self._strong_k]) + merged
+            source_ids = {
+                source_id
+                for merged_chunk in merged
+                for source_id in merged_chunk.source_chunk_ids
+            }
+            unmerged = [chunk for chunk in chunks[self._strong_k:] if chunk.id not in source_ids]
+            pool: list[Chunk | MergedChunk] = list(chunks[: self._strong_k]) + merged + unmerged
             pool = [x for x in pool if x.embedding]
             pool.sort(key=lambda x: cosine_similarity(x.embedding, query_emb), reverse=True)
-            final_context = pool[: self._top_k]
+            final_context = _within_token_budget(pool[: self._top_k], self._token_budget)
             t_rerank = time.time() - t_rerank_start
 
         t_answer_start = time.time()

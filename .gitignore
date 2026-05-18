@@ -43,6 +43,9 @@ AGENT.md
 PROJECT_BRIEF.md
 
 # Local data and generated artifacts
+runs.db
+runs.db-*
+data/chroma/
 data/raw/
 data/processed/
 datasets/

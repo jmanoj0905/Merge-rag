@@ -5,17 +5,19 @@ Strategy:
   lifespan so the app starts without needing real models or Ollama.
 - After the TestClient context manager enters (lifespan has run), override
   app.state.embedder and app.state.llm with fully-configured MagicMocks.
-- ChromaDB's EphemeralClient is shared within a process, so collections
-  created via ChromaRetriever in tests are visible to the route's own client.
+- The API owns an app-scoped Chroma client, while direct ChromaRetriever
+  seeding remains visible through ChromaDB's process-local ephemeral store.
 """
 import io
 import uuid
-
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch
 
+import pytest
+from fastapi import HTTPException, UploadFile
+from fastapi.testclient import TestClient
+
 from mergerag.api.app import app
+from mergerag.api.routes.ingest import _read_upload_limited
 from mergerag.adapters.retriever import ChromaRetriever
 
 _EMBED_DIM = 384
@@ -101,6 +103,15 @@ class TestIngest:
         )
         assert resp.status_code == 200
         assert resp.json()["doc_id"] == "my_doc"
+
+    @pytest.mark.anyio
+    async def test_upload_size_limit_returns_413(self):
+        upload = UploadFile(filename="large.txt", file=io.BytesIO(b"abcdef"))
+
+        with pytest.raises(HTTPException) as exc:
+            await _read_upload_limited(upload, max_bytes=5)
+
+        assert exc.value.status_code == 413
 
 
 # ---------------------------------------------------------------------------
@@ -193,6 +204,79 @@ class TestQuery:
         assert isinstance(body["merged_chunks"], list)
         assert isinstance(body["final_context"], list)
         assert isinstance(body["citations"], list)
+
+    def test_invalid_pipeline_params_return_422(self, client, collection_name):
+        resp = client.post(
+            "/query",
+            json={
+                "query": "capitals",
+                "strategy": "top_k",
+                "collection_name": collection_name,
+                "params": {"top_n": 2, "top_k": 3},
+            },
+        )
+        assert resp.status_code == 422
+
+    def test_invalid_pipeline_params_against_defaults_return_422(self, client, collection_name):
+        self._seed_collection(collection_name)
+        resp = client.post(
+            "/query",
+            json={
+                "query": "capitals",
+                "strategy": "top_k",
+                "collection_name": collection_name,
+                "params": {"strong_k": 100},
+            },
+        )
+        assert resp.status_code == 422
+
+    def test_hybrid_cache_refreshes_after_ingest(self, client, collection_name):
+        self._seed_collection(collection_name)
+        first = client.post(
+            "/query",
+            json={
+                "query": "capitals",
+                "strategy": "top_k",
+                "collection_name": collection_name,
+                "params": {"retriever": "hybrid"},
+            },
+        )
+        assert first.status_code == 200
+
+        ingest_resp = client.post(
+            "/ingest",
+            data={"collection_name": collection_name, "doc_id": "zebra_doc"},
+            files={"file": ("zebra.txt", io.BytesIO(b"zebra-token appears here."), "text/plain")},
+        )
+        assert ingest_resp.status_code == 200
+
+        second = client.post(
+            "/query",
+            json={
+                "query": "zebra-token",
+                "strategy": "top_k",
+                "collection_name": collection_name,
+                "params": {"retriever": "hybrid"},
+            },
+        )
+        assert second.status_code == 200
+        retrieved_ids = [chunk["doc_id"] for chunk in second.json()["retrieved_chunks"]]
+        assert "zebra_doc" in retrieved_ids
+
+    def test_query_runtime_failure_returns_502(self, client, collection_name):
+        self._seed_collection(collection_name)
+        client.app.state.llm.complete.side_effect = RuntimeError("ollama unavailable")
+
+        resp = client.post(
+            "/query",
+            json={
+                "query": "capitals",
+                "strategy": "top_k",
+                "collection_name": collection_name,
+            },
+        )
+
+        assert resp.status_code == 502
 
 
 # ---------------------------------------------------------------------------
