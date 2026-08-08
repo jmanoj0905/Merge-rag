@@ -1,0 +1,60 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore
+#
+# --- From .gitignore (uncomment to exclude) ---
+
+# AGENT.md
+# PROJECT_BRIEF.md
+# CLAUDE.md
+# .claude
+# docs/superpowers/
+# *.py[cod]
+# *.pyo
+# .pytest_cache/
+# .ruff_cache/
+# .mypy_cache/
+# .coverage
+# htmlcov/
+# temp_venv/
+# *.egg-info/
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+# pnpm-debug.log*
+# .env
+# .env.*
+# !.env.example
+# *.pem
+# *.key
+# AGENT.md
+# PROJECT_BRIEF.md
+# runs.db
+# runs.db-*
+# data/chroma/
+# data/raw/
+# data/processed/
+# datasets/
+# artifacts/
+# reports/generated/
+# qdrant_storage/
+# uploads/
+# cache/
+# models/
+# benchmark_runs/
+# *.pid
+# docker-compose.override.yml
+# .DS_Store
+# Thumbs.db
+# .gstack/
+
+# --- Detected directories (uncomment to exclude) ---
+
+# tests/
+# docs/
+# scripts/
+
+# --- Test file patterns (uncomment to exclude) ---
+
+# *.test.*
+# *.spec.*
+# *.snap

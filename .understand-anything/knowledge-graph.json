@@ -1,0 +1,4884 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "mergerag",
+    "languages": [
+      "json",
+      "markdown",
+      "python",
+      "toml",
+      "txt"
+    ],
+    "frameworks": [
+      "ChromaDB",
+      "FastAPI",
+      "NumPy",
+      "Ollama",
+      "Streamlit",
+      "Uvicorn",
+      "httpx",
+      "pydantic-settings",
+      "pytest",
+      "rank-bm25",
+      "requests",
+      "sentence-transformers"
+    ],
+    "description": "A retrieval-augmented generation system that merges retrieved chunks before passing them to the language model, with three strategies (top_k baseline, symmetric concatenation, asymmetric LLM-anchored merging) and pluggable dense or hybrid BM25+dense retrieval.",
+    "analyzedAt": "2026-05-21T03:30:38.785850Z",
+    "gitCommitHash": "5c74460cfef53164089e17e2dd2e9aa7ac1f972f"
+  },
+  "nodes": [
+    {
+      "id": "file:mergerag/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/__init__.py",
+      "summary": "Empty package marker for the top-level mergerag Python package.",
+      "tags": [
+        "entry-point",
+        "package-marker",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/core/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/core/__init__.py",
+      "summary": "Empty package marker for the mergerag.core subpackage that exposes shared models, ports, and utilities.",
+      "tags": [
+        "entry-point",
+        "package-marker",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/core/models.py",
+      "type": "file",
+      "name": "models.py",
+      "filePath": "mergerag/core/models.py",
+      "summary": "Defines the core dataclasses used across the pipeline: Query, Chunk, MergedChunk, MergeOp, MergePlan, Citation, RunTrace, and RunScore.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "dataclasses",
+        "schema",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Python dataclasses to declare immutable-ish value objects shared by retriever, merger, and benchmark layers."
+    },
+    {
+      "id": "class:mergerag/core/models.py:Query",
+      "type": "class",
+      "name": "Query",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        11,
+        13
+      ],
+      "summary": "Bundles a query string with its precomputed embedding so retrievers can score it without re-embedding.",
+      "tags": [
+        "data-model",
+        "query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:Chunk",
+      "type": "class",
+      "name": "Chunk",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        17,
+        23
+      ],
+      "summary": "Represents a single retrieved passage with id, parent doc id, text, retrieval score, rank, and optional embedding.",
+      "tags": [
+        "data-model",
+        "retrieval",
+        "chunk"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:MergedChunk",
+      "type": "class",
+      "name": "MergedChunk",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "Output of a merge operation that combines multiple source chunks, tracking provenance via source_chunk_ids and merge_type.",
+      "tags": [
+        "data-model",
+        "merge",
+        "chunk"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:MergeOp",
+      "type": "class",
+      "name": "MergeOp",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        37,
+        40
+      ],
+      "summary": "Describes a single planned merge step with a type tag, primary chunk, and optional secondary chunk.",
+      "tags": [
+        "data-model",
+        "merge",
+        "plan"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:MergePlan",
+      "type": "class",
+      "name": "MergePlan",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        44,
+        45
+      ],
+      "summary": "Container for an ordered list of MergeOp operations produced by the planner and consumed by the executor.",
+      "tags": [
+        "data-model",
+        "merge",
+        "plan"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:Citation",
+      "type": "class",
+      "name": "Citation",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        49,
+        51
+      ],
+      "summary": "Maps an answer sentence to the chunk ids that support it, parsed out of the LLM response.",
+      "tags": [
+        "data-model",
+        "citation",
+        "answer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:RunTrace",
+      "type": "class",
+      "name": "RunTrace",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        55,
+        69
+      ],
+      "summary": "Full trace of a single pipeline run: query, strategy, retrieved/merged chunks, final context, answer, citations, latency, and config snapshot for reproducibility.",
+      "tags": [
+        "data-model",
+        "trace",
+        "telemetry"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/models.py:RunScore",
+      "type": "class",
+      "name": "RunScore",
+      "filePath": "mergerag/core/models.py",
+      "lineRange": [
+        73,
+        79
+      ],
+      "summary": "Holds Exact Match and F1 scores for a single run/question pair produced by the benchmark scorer.",
+      "tags": [
+        "data-model",
+        "evaluation",
+        "score"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/core/ports.py",
+      "type": "file",
+      "name": "ports.py",
+      "filePath": "mergerag/core/ports.py",
+      "summary": "Declares the hexagonal-architecture port interfaces (EmbedderPort, RetrieverPort, LLMPort, RunStorePort, ScoreStorePort) that adapters must implement.",
+      "tags": [
+        "ports",
+        "interface",
+        "hexagonal-architecture",
+        "type-definition"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses Python Protocol classes to express structural typing for swappable adapters."
+    },
+    {
+      "id": "class:mergerag/core/ports.py:EmbedderPort",
+      "type": "class",
+      "name": "EmbedderPort",
+      "filePath": "mergerag/core/ports.py",
+      "lineRange": [
+        5,
+        8
+      ],
+      "summary": "Protocol for embedding adapters; defines a single embed(texts) method returning per-text vectors.",
+      "tags": [
+        "port",
+        "interface",
+        "embedder"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/ports.py:RetrieverPort",
+      "type": "class",
+      "name": "RetrieverPort",
+      "filePath": "mergerag/core/ports.py",
+      "lineRange": [
+        11,
+        18
+      ],
+      "summary": "Protocol for retrieval adapters with retrieve(query, top_n) and index(documents) methods, implemented by ChromaRetriever and HybridRetriever.",
+      "tags": [
+        "port",
+        "interface",
+        "retriever"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/ports.py:LLMPort",
+      "type": "class",
+      "name": "LLMPort",
+      "filePath": "mergerag/core/ports.py",
+      "lineRange": [
+        21,
+        24
+      ],
+      "summary": "Protocol for language-model adapters; exposes a complete(prompt, max_tokens) method, currently implemented against Ollama.",
+      "tags": [
+        "port",
+        "interface",
+        "llm"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/ports.py:RunStorePort",
+      "type": "class",
+      "name": "RunStorePort",
+      "filePath": "mergerag/core/ports.py",
+      "lineRange": [
+        27,
+        35
+      ],
+      "summary": "Protocol for persisting RunTrace objects with save/get/list_runs, backed by SQLite in the default adapter.",
+      "tags": [
+        "port",
+        "interface",
+        "persistence",
+        "store"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/core/ports.py:ScoreStorePort",
+      "type": "class",
+      "name": "ScoreStorePort",
+      "filePath": "mergerag/core/ports.py",
+      "lineRange": [
+        38,
+        46
+      ],
+      "summary": "Protocol for persisting RunScore objects (EM/F1) produced by the benchmark scorer.",
+      "tags": [
+        "port",
+        "interface",
+        "persistence",
+        "store"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/core/utils.py",
+      "type": "file",
+      "name": "utils.py",
+      "filePath": "mergerag/core/utils.py",
+      "summary": "Small numerical helpers shared across the codebase, currently just a numpy-based cosine similarity used for reranking.",
+      "tags": [
+        "utility",
+        "math",
+        "vector",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/pipeline.py",
+      "type": "file",
+      "name": "pipeline.py",
+      "filePath": "mergerag/pipeline.py",
+      "summary": "Orchestrates the end-to-end MergeRAG flow: embed query, retrieve top_n chunks, optionally plan and execute symmetric/asymmetric merges, rerank by cosine similarity, then prompt the LLM for an answer with citations.",
+      "tags": [
+        "pipeline",
+        "orchestrator",
+        "rag",
+        "entry-point",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Stage-level timings logged at DEBUG support the latency profiling work documented in benchmark_findings.md."
+    },
+    {
+      "id": "function:mergerag/pipeline.py:_count_tokens",
+      "type": "function",
+      "name": "_count_tokens",
+      "filePath": "mergerag/pipeline.py",
+      "lineRange": [
+        18,
+        19
+      ],
+      "summary": "Approximate token count by summing whitespace-split word counts across chunks.",
+      "tags": [
+        "utility",
+        "tokens",
+        "internal"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/pipeline.py:_parse_citations",
+      "type": "function",
+      "name": "_parse_citations",
+      "filePath": "mergerag/pipeline.py",
+      "lineRange": [
+        22,
+        34
+      ],
+      "summary": "Splits the LLM answer into sentences and extracts bracketed [chunk_id] citations, filtering to ids present in the final context.",
+      "tags": [
+        "parsing",
+        "citations",
+        "regex"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/pipeline.py:_generate_answer",
+      "type": "function",
+      "name": "_generate_answer",
+      "filePath": "mergerag/pipeline.py",
+      "lineRange": [
+        37,
+        46
+      ],
+      "summary": "Loads the answer prompt template, formats it with query and context, calls the LLM, and parses citations from the response.",
+      "tags": [
+        "prompt",
+        "llm",
+        "answer"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/pipeline.py:_within_token_budget",
+      "type": "function",
+      "name": "_within_token_budget",
+      "filePath": "mergerag/pipeline.py",
+      "lineRange": [
+        49,
+        64
+      ],
+      "summary": "Greedy selector that keeps chunks in order while their cumulative token count stays under the budget, always keeping at least the first item.",
+      "tags": [
+        "selection",
+        "budget",
+        "tokens"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/pipeline.py:MergeRAGPipeline",
+      "type": "class",
+      "name": "MergeRAGPipeline",
+      "filePath": "mergerag/pipeline.py",
+      "lineRange": [
+        67,
+        179
+      ],
+      "summary": "Main pipeline class wired with embedder, retriever, and LLM adapters; the run() method dispatches on strategy (top_k / symmetric / asymmetric) and returns a fully populated RunTrace.",
+      "tags": [
+        "pipeline",
+        "orchestrator",
+        "rag"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:app/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "app/__init__.py",
+      "summary": "Empty package marker for the Streamlit-based frontend app package.",
+      "tags": [
+        "entry-point",
+        "package-marker",
+        "python"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/api_client.py",
+      "type": "file",
+      "name": "api_client.py",
+      "filePath": "app/api_client.py",
+      "summary": "Thin HTTP client used by the Streamlit UI to POST queries to the MergeRAG API, forwarding all retriever and pipeline knobs and converting non-2xx responses to APIError.",
+      "tags": [
+        "api-client",
+        "http",
+        "frontend",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:app/api_client.py:APIError",
+      "type": "class",
+      "name": "APIError",
+      "filePath": "app/api_client.py",
+      "lineRange": [
+        5,
+        6
+      ],
+      "summary": "Exception raised when the API returns a non-success response or the request fails.",
+      "tags": [
+        "exception",
+        "error",
+        "api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/api_client.py:call_query",
+      "type": "function",
+      "name": "call_query",
+      "filePath": "app/api_client.py",
+      "lineRange": [
+        9,
+        57
+      ],
+      "summary": "Posts a query plus all pipeline parameters (strategy, retriever, top_n/top_k, strong_k, token_budget, asymmetric_max_ops) to the MergeRAG /query endpoint and returns the parsed JSON response.",
+      "tags": [
+        "api-client",
+        "http",
+        "query"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/helpers.py",
+      "type": "file",
+      "name": "helpers.py",
+      "filePath": "app/helpers.py",
+      "summary": "Frontend utility helpers for stripping bracketed citations from an answer and computing Exact Match against a gold reference.",
+      "tags": [
+        "utility",
+        "evaluation",
+        "frontend",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:app/streamlit_app.py",
+      "type": "file",
+      "name": "streamlit_app.py",
+      "filePath": "app/streamlit_app.py",
+      "summary": "Streamlit UI that runs the three strategies (top_k, symmetric, asymmetric) side-by-side, with sliders for pipeline knobs, a keyword-based smart routing classifier, and per-column rendering of answer, citations, retrieved chunks, and EM score.",
+      "tags": [
+        "frontend",
+        "streamlit",
+        "ui",
+        "entry-point"
+      ],
+      "complexity": "complex",
+      "languageNotes": "COMPARISON_KEYWORDS list implements the ~87%-accurate keyword classifier referenced in CLAUDE.md."
+    },
+    {
+      "id": "function:app/streamlit_app.py:classify_question",
+      "type": "function",
+      "name": "classify_question",
+      "filePath": "app/streamlit_app.py",
+      "lineRange": [
+        41,
+        47
+      ],
+      "summary": "Lightweight keyword classifier that routes comparison questions to top_k and bridge questions to asymmetric, returning both the type and the chosen strategy.",
+      "tags": [
+        "routing",
+        "classifier",
+        "heuristic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:app/streamlit_app.py:render_column",
+      "type": "function",
+      "name": "render_column",
+      "filePath": "app/streamlit_app.py",
+      "lineRange": [
+        68,
+        116
+      ],
+      "summary": "Renders one strategy column in the side-by-side comparison view, showing the answer, EM score, citations, retrieved chunks, and latency metadata.",
+      "tags": [
+        "ui",
+        "rendering",
+        "streamlit"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Top-level project documentation covering the three merge strategies, architecture diagram, project layout, setup, benchmark commands, configuration knobs, and v1-v4 result tables.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:corrections.md",
+      "type": "document",
+      "name": "corrections.md",
+      "filePath": "corrections.md",
+      "summary": "Short running list of code corrections and observations against the project, used as a working notes file.",
+      "tags": [
+        "documentation",
+        "notes",
+        "corrections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:pyproject.toml",
+      "type": "config",
+      "name": "pyproject.toml",
+      "filePath": "pyproject.toml",
+      "summary": "Python project metadata and dependency declaration covering runtime, optional, and dev dependency groups plus pytest configuration.",
+      "tags": [
+        "configuration",
+        "python",
+        "build-system",
+        "dependencies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:results/benchmark_findings.md",
+      "type": "document",
+      "name": "benchmark_findings.md",
+      "filePath": "results/benchmark_findings.md",
+      "summary": "Detailed write-up of four HotpotQA benchmark runs (v1 baseline, v2 fixes, v3 hybrid retriever, v4 qwen2.5:7b), per-question-type breakdowns, profile results, and key findings on merge strategy efficacy.",
+      "tags": [
+        "documentation",
+        "benchmark",
+        "results",
+        "analysis"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:mergerag/prompts/answer.txt",
+      "type": "document",
+      "name": "answer.txt",
+      "filePath": "mergerag/prompts/answer.txt",
+      "summary": "Prompt template loaded by the pipeline to instruct the LLM to answer using the provided context and cite chunk ids in brackets.",
+      "tags": [
+        "prompt",
+        "template",
+        "llm"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:mergerag/prompts/merge_asymmetric.txt",
+      "type": "document",
+      "name": "merge_asymmetric.txt",
+      "filePath": "mergerag/prompts/merge_asymmetric.txt",
+      "summary": "Prompt template used by the asymmetric merge executor to anchor a weak chunk to a strong one via the LLM.",
+      "tags": [
+        "prompt",
+        "template",
+        "merge",
+        "asymmetric"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:mergerag/prompts/merge_symmetric.txt",
+      "type": "document",
+      "name": "merge_symmetric.txt",
+      "filePath": "mergerag/prompts/merge_symmetric.txt",
+      "summary": "Prompt template historically used for symmetric merge synthesis; the current sym_fixed implementation skips this LLM call in favor of plain concatenation.",
+      "tags": [
+        "prompt",
+        "template",
+        "merge",
+        "symmetric"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/adapters/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/adapters/__init__.py",
+      "summary": "Empty package marker for the adapters subpackage that hosts concrete implementations of core ports (embedder, LLM, retriever, stores).",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "adapters"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/adapters/embedder.py",
+      "type": "file",
+      "name": "embedder.py",
+      "filePath": "mergerag/adapters/embedder.py",
+      "summary": "SentenceTransformer-based embedder adapter implementing EmbedderPort, defaulting to the all-MiniLM-L6-v2 model.",
+      "tags": [
+        "adapter",
+        "embeddings",
+        "sentence-transformers",
+        "port-implementation",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/adapters/embedder.py:SentenceTransformerEmbedder",
+      "type": "class",
+      "name": "SentenceTransformerEmbedder",
+      "filePath": "mergerag/adapters/embedder.py",
+      "lineRange": [
+        5,
+        10
+      ],
+      "summary": "Wraps a SentenceTransformer model and exposes an embed() method that returns Python lists for downstream consumers.",
+      "tags": [
+        "adapter",
+        "embeddings",
+        "port-implementation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/adapters/llm.py",
+      "type": "file",
+      "name": "llm.py",
+      "filePath": "mergerag/adapters/llm.py",
+      "summary": "Ollama-backed LLM adapter implementing LLMPort, defaulting to the qwen2.5:3b model with a configurable max_tokens budget.",
+      "tags": [
+        "adapter",
+        "llm",
+        "ollama",
+        "port-implementation",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/adapters/llm.py:OllamaLLM",
+      "type": "class",
+      "name": "OllamaLLM",
+      "filePath": "mergerag/adapters/llm.py",
+      "lineRange": [
+        5,
+        15
+      ],
+      "summary": "Thin client around the ollama Python SDK that issues a single generate call and returns the response text.",
+      "tags": [
+        "adapter",
+        "llm",
+        "ollama"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/adapters/retriever.py",
+      "type": "file",
+      "name": "retriever.py",
+      "filePath": "mergerag/adapters/retriever.py",
+      "summary": "Retriever adapters layering dense Chroma vector search, BM25 sparse retrieval, and a hybrid retriever that fuses both via Reciprocal Rank Fusion.",
+      "tags": [
+        "adapter",
+        "retrieval",
+        "vector-search",
+        "hybrid-search",
+        "bm25",
+        "tested"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses chromadb for dense ANN search and rank_bm25 for sparse retrieval; RRF k=60 follows the original Cormack et al. recipe."
+    },
+    {
+      "id": "class:mergerag/adapters/retriever.py:ChromaRetriever",
+      "type": "class",
+      "name": "ChromaRetriever",
+      "filePath": "mergerag/adapters/retriever.py",
+      "lineRange": [
+        17,
+        91
+      ],
+      "summary": "Dense vector retriever that wraps a Chroma collection with cosine similarity, supporting indexing, full-corpus dumps, and embedding-based retrieval.",
+      "tags": [
+        "retriever",
+        "dense-search",
+        "chromadb",
+        "port-implementation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:mergerag/adapters/retriever.py:BM25Index",
+      "type": "class",
+      "name": "BM25Index",
+      "filePath": "mergerag/adapters/retriever.py",
+      "lineRange": [
+        125,
+        140
+      ],
+      "summary": "In-memory BM25Okapi index over a chunk list, tokenizing on lowercased alphanumeric runs for sparse keyword retrieval.",
+      "tags": [
+        "retriever",
+        "bm25",
+        "sparse-search",
+        "lexical"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/adapters/retriever.py:HybridRetriever",
+      "type": "class",
+      "name": "HybridRetriever",
+      "filePath": "mergerag/adapters/retriever.py",
+      "lineRange": [
+        143,
+        187
+      ],
+      "summary": "Composite retriever that combines a ChromaRetriever and a BM25Index, refreshing the sparse arm when the collection changes and fusing results with RRF.",
+      "tags": [
+        "retriever",
+        "hybrid-search",
+        "rrf",
+        "port-implementation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:mergerag/adapters/retriever.py:rrf_fuse",
+      "type": "function",
+      "name": "rrf_fuse",
+      "filePath": "mergerag/adapters/retriever.py",
+      "lineRange": [
+        94,
+        122
+      ],
+      "summary": "Reciprocal Rank Fusion of dense and sparse result lists with smoothing constant k=60, returning chunks ranked by summed reciprocal-rank scores.",
+      "tags": [
+        "fusion",
+        "rrf",
+        "ranking",
+        "retrieval"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/adapters/run_store.py",
+      "type": "file",
+      "name": "run_store.py",
+      "filePath": "mergerag/adapters/run_store.py",
+      "summary": "SQLite-backed persistence for RunTrace objects, serializing retrieved chunks, merged chunks, final context, merge plans, and citations to JSON columns.",
+      "tags": [
+        "adapter",
+        "persistence",
+        "sqlite",
+        "run-tracing",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:mergerag/adapters/run_store.py:SQLiteRunStore",
+      "type": "class",
+      "name": "SQLiteRunStore",
+      "filePath": "mergerag/adapters/run_store.py",
+      "lineRange": [
+        110,
+        162
+      ],
+      "summary": "Implements RunStorePort against SQLite with INSERT OR REPLACE save semantics and pagination over runs ordered by creation time.",
+      "tags": [
+        "adapter",
+        "sqlite",
+        "port-implementation",
+        "persistence"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/adapters/score_store.py",
+      "type": "file",
+      "name": "score_store.py",
+      "filePath": "mergerag/adapters/score_store.py",
+      "summary": "SQLite-backed persistence for per-run RunScore records capturing exact-match and F1 evaluation outputs alongside the gold answer.",
+      "tags": [
+        "adapter",
+        "persistence",
+        "sqlite",
+        "evaluation",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/adapters/score_store.py:SQLiteScoreStore",
+      "type": "class",
+      "name": "SQLiteScoreStore",
+      "filePath": "mergerag/adapters/score_store.py",
+      "lineRange": [
+        20,
+        73
+      ],
+      "summary": "Implements ScoreStorePort with a flat scores table keyed by run_id, supporting upsert save and time-ordered listing.",
+      "tags": [
+        "adapter",
+        "sqlite",
+        "port-implementation",
+        "evaluation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/ingestion/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/ingestion/__init__.py",
+      "summary": "Public surface of the ingestion subpackage, re-exporting load_document, ParagraphChunker, and ingest_document.",
+      "tags": [
+        "entry-point",
+        "barrel",
+        "ingestion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/ingestion/chunker.py",
+      "type": "file",
+      "name": "chunker.py",
+      "filePath": "mergerag/ingestion/chunker.py",
+      "summary": "Paragraph-based text chunker that greedily merges paragraphs up to max_chars and folds short trailing pieces into the previous chunk for deterministic Chunk IDs.",
+      "tags": [
+        "ingestion",
+        "chunking",
+        "text-processing",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:mergerag/ingestion/chunker.py:ParagraphChunker",
+      "type": "class",
+      "name": "ParagraphChunker",
+      "filePath": "mergerag/ingestion/chunker.py",
+      "lineRange": [
+        6,
+        56
+      ],
+      "summary": "Splits documents on double newlines, greedily merges paragraphs under a max_chars budget, and emits Chunk objects with deterministic zero-padded IDs.",
+      "tags": [
+        "chunker",
+        "ingestion",
+        "text-processing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/ingestion/ingest.py",
+      "type": "file",
+      "name": "ingest.py",
+      "filePath": "mergerag/ingestion/ingest.py",
+      "summary": "Top-level ingestion orchestrator that loads a document, chunks it, embeds the chunks, and indexes them via the injected retriever.",
+      "tags": [
+        "ingestion",
+        "orchestration",
+        "pipeline",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/ingestion/ingest.py:ingest_document",
+      "type": "function",
+      "name": "ingest_document",
+      "filePath": "mergerag/ingestion/ingest.py",
+      "lineRange": [
+        10,
+        29
+      ],
+      "summary": "Loads a file, chunks it with an optional ParagraphChunker, embeds the chunks, and writes them into the retriever, returning the chunk count.",
+      "tags": [
+        "ingestion",
+        "orchestration",
+        "embedding-pipeline"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/ingestion/loader.py",
+      "type": "file",
+      "name": "loader.py",
+      "filePath": "mergerag/ingestion/loader.py",
+      "summary": "Loads .txt and .md documents from disk, stripping fenced code blocks and HTML tags from Markdown before returning the raw text.",
+      "tags": [
+        "ingestion",
+        "loader",
+        "file-io",
+        "text-processing",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/ingestion/loader.py:load_document",
+      "type": "function",
+      "name": "load_document",
+      "filePath": "mergerag/ingestion/loader.py",
+      "lineRange": [
+        7,
+        30
+      ],
+      "summary": "Reads a text or Markdown file and returns a (doc_id, normalized text) tuple, raising on unsupported extensions.",
+      "tags": [
+        "loader",
+        "ingestion",
+        "file-io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/merge/__init__.py",
+      "summary": "Empty package marker for the merge subpackage, which contains the planner, executor, and per-strategy modules.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "merge"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/executor.py",
+      "type": "file",
+      "name": "executor.py",
+      "filePath": "mergerag/merge/executor.py",
+      "summary": "Executes a MergePlan by concatenating symmetric pairs (no LLM call) and using LLM synthesis only for asymmetric merges, mitigating small-model hallucination.",
+      "tags": [
+        "merge",
+        "executor",
+        "llm",
+        "synthesis",
+        "tested"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Symmetric concatenation was introduced after the n=500 run showed qwen2.5:3b hallucinating on weak-pair synthesis."
+    },
+    {
+      "id": "function:mergerag/merge/executor.py:execute",
+      "type": "function",
+      "name": "execute",
+      "filePath": "mergerag/merge/executor.py",
+      "lineRange": [
+        18,
+        41
+      ],
+      "summary": "Iterates merge operations and produces MergedChunk objects, branching between text concatenation for symmetric and LLM-prompted synthesis for other types.",
+      "tags": [
+        "merge",
+        "executor",
+        "llm"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/planner.py",
+      "type": "file",
+      "name": "planner.py",
+      "filePath": "mergerag/merge/planner.py",
+      "summary": "Pure planning function that partitions retrieved chunks into strong and weak sets and dispatches to symmetric or asymmetric strategies to build a MergePlan.",
+      "tags": [
+        "merge",
+        "planner",
+        "strategy-dispatch",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/merge/planner.py:plan",
+      "type": "function",
+      "name": "plan",
+      "filePath": "mergerag/merge/planner.py",
+      "lineRange": [
+        7,
+        25
+      ],
+      "summary": "Splits chunks at strong_k and routes the weak tail to pair_weak_chunks or assign_to_anchors based on strategy, capping asymmetric ops.",
+      "tags": [
+        "planner",
+        "merge",
+        "strategy-dispatch"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/strategies/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/merge/strategies/__init__.py",
+      "summary": "Empty package marker grouping the symmetric and asymmetric merge strategy modules.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "strategies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/strategies/asymmetric.py",
+      "type": "file",
+      "name": "asymmetric.py",
+      "filePath": "mergerag/merge/strategies/asymmetric.py",
+      "summary": "Asymmetric merge strategy that anchors each weak chunk to its nearest same-doc strong chunk, sorts candidates by similarity, and caps merges to bound latency.",
+      "tags": [
+        "merge",
+        "strategy",
+        "asymmetric",
+        "cosine-similarity",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/merge/strategies/asymmetric.py:assign_to_anchors",
+      "type": "function",
+      "name": "assign_to_anchors",
+      "filePath": "mergerag/merge/strategies/asymmetric.py",
+      "lineRange": [
+        5,
+        35
+      ],
+      "summary": "Pairs each weak chunk with its best same-doc strong anchor above min_similarity, then returns up to max_ops asymmetric MergeOps ordered by similarity.",
+      "tags": [
+        "merge",
+        "asymmetric",
+        "anchoring"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/merge/strategies/symmetric.py",
+      "type": "file",
+      "name": "symmetric.py",
+      "filePath": "mergerag/merge/strategies/symmetric.py",
+      "summary": "Symmetric merge strategy that greedily pairs weak chunks by highest mutual cosine similarity within the same document, skipping low-similarity pairs.",
+      "tags": [
+        "merge",
+        "strategy",
+        "symmetric",
+        "cosine-similarity",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/merge/strategies/symmetric.py:pair_weak_chunks",
+      "type": "function",
+      "name": "pair_weak_chunks",
+      "filePath": "mergerag/merge/strategies/symmetric.py",
+      "lineRange": [
+        5,
+        40
+      ],
+      "summary": "Greedy O(n^2) pairing of weak chunks that selects each chunk's best remaining partner above min_similarity, restricted to same-document pairs by default.",
+      "tags": [
+        "merge",
+        "symmetric",
+        "pairing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/eval/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/eval/__init__.py",
+      "summary": "Empty package marker for the evaluation subpackage that hosts the benchmark orchestrator and scoring helpers.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "evaluation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/eval/benchmark.py",
+      "type": "file",
+      "name": "benchmark.py",
+      "filePath": "mergerag/eval/benchmark.py",
+      "summary": "Benchmark orchestrator that ingests a HotpotQA fixture, runs the pipeline across configured strategies, scores answers with EM/F1, persists traces, and aggregates per-strategy summaries.",
+      "tags": [
+        "evaluation",
+        "benchmark",
+        "orchestration",
+        "hotpotqa",
+        "tested"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:mergerag/eval/benchmark.py:_ingest_corpus",
+      "type": "function",
+      "name": "_ingest_corpus",
+      "filePath": "mergerag/eval/benchmark.py",
+      "lineRange": [
+        103,
+        128
+      ],
+      "summary": "Materializes every unique HotpotQA context document to a temp file and feeds it through ingest_document so the retriever's index reflects the fixture.",
+      "tags": [
+        "evaluation",
+        "ingestion",
+        "fixture-loading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/eval/benchmark.py:_compute_summary",
+      "type": "function",
+      "name": "_compute_summary",
+      "filePath": "mergerag/eval/benchmark.py",
+      "lineRange": [
+        131,
+        152
+      ],
+      "summary": "Aggregates per-strategy mean EM, F1, latency, and token counts from the run results into a StrategyStats summary map.",
+      "tags": [
+        "evaluation",
+        "aggregation",
+        "statistics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/eval/benchmark.py:_filter_active_asymmetric_examples",
+      "type": "function",
+      "name": "_filter_active_asymmetric_examples",
+      "filePath": "mergerag/eval/benchmark.py",
+      "lineRange": [
+        155,
+        175
+      ],
+      "summary": "Pre-runs the planner in asymmetric mode against each question and keeps only those where at least one merge op would fire, enabling targeted asymmetric benchmarking.",
+      "tags": [
+        "evaluation",
+        "filtering",
+        "asymmetric"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/eval/benchmark.py:run_benchmark",
+      "type": "function",
+      "name": "run_benchmark",
+      "filePath": "mergerag/eval/benchmark.py",
+      "lineRange": [
+        178,
+        273
+      ],
+      "summary": "Top-level benchmark loop that ingests the corpus, builds the pipeline, iterates examples and strategies, scores each run, persists traces and scores, and assembles a BenchmarkResult.",
+      "tags": [
+        "evaluation",
+        "benchmark",
+        "orchestration",
+        "entry-point"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:mergerag/eval/benchmark.py:_answer_for_scoring",
+      "type": "function",
+      "name": "_answer_for_scoring",
+      "filePath": "mergerag/eval/benchmark.py",
+      "lineRange": [
+        38,
+        55
+      ],
+      "summary": "Cleans citation tags from a pipeline answer and falls back to extracting bracketed chunk-id stems so malformed outputs still score sensibly.",
+      "tags": [
+        "evaluation",
+        "post-processing",
+        "citations"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/eval/scorer.py",
+      "type": "file",
+      "name": "scorer.py",
+      "filePath": "mergerag/eval/scorer.py",
+      "summary": "Implements SQuAD-style normalization, exact-match, and token-overlap F1 scoring used for evaluating HotpotQA answers.",
+      "tags": [
+        "evaluation",
+        "scoring",
+        "metrics",
+        "squad",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/eval/scorer.py:f1",
+      "type": "function",
+      "name": "f1",
+      "filePath": "mergerag/eval/scorer.py",
+      "lineRange": [
+        17,
+        30
+      ],
+      "summary": "Computes token-overlap F1 between a predicted and gold answer after SQuAD-style normalization, handling empty-string edge cases.",
+      "tags": [
+        "evaluation",
+        "metrics",
+        "f1"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/benchmark_cli.py",
+      "type": "file",
+      "name": "benchmark_cli.py",
+      "filePath": "scripts/benchmark_cli.py",
+      "summary": "Command-line entry point that wires up embedder, retriever (chroma or hybrid), LLM, and SQLite stores, then runs the benchmark and writes a JSON results report.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "benchmark",
+        "orchestration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:scripts/benchmark_cli.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/benchmark_cli.py",
+      "lineRange": [
+        43,
+        132
+      ],
+      "summary": "Parses CLI arguments, optionally resets the Chroma collection, builds all adapters, runs the benchmark, prints a summary table, and serializes per-run results to JSON.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "benchmark"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:scripts/ingest_cli.py",
+      "type": "file",
+      "name": "ingest_cli.py",
+      "filePath": "scripts/ingest_cli.py",
+      "summary": "Command-line entry point that ingests a single .txt or .md file into a Chroma collection using the SentenceTransformer embedder.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "ingestion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:scripts/ingest_cli.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/ingest_cli.py",
+      "lineRange": [
+        10,
+        50
+      ],
+      "summary": "Parses --path, --collection, and --persist-path, constructs embedder and retriever, calls ingest_document, and reports the indexed chunk count.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "ingestion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:scripts/profile_latency.py",
+      "type": "file",
+      "name": "profile_latency.py",
+      "filePath": "scripts/profile_latency.py",
+      "summary": "Profiling script that attaches a logging handler to capture per-stage latencies across strategies and prints aggregate statistics including asymmetric merge fire rates.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "profiling",
+        "diagnostics"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses a logging.Handler subclass to intercept DEBUG stage timings emitted by the pipeline rather than instrumenting it directly."
+    },
+    {
+      "id": "class:scripts/profile_latency.py:StageCapture",
+      "type": "class",
+      "name": "StageCapture",
+      "filePath": "scripts/profile_latency.py",
+      "lineRange": [
+        31,
+        45
+      ],
+      "summary": "Custom logging handler that parses pipeline stage-latency log lines into structured rows for downstream aggregation.",
+      "tags": [
+        "profiling",
+        "logging",
+        "diagnostics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:scripts/profile_latency.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "scripts/profile_latency.py",
+      "lineRange": [
+        48,
+        129
+      ],
+      "summary": "Configures DEBUG logging, runs N HotpotQA questions through all three strategies, then aggregates mean per-stage timings and detailed merge fire-rate statistics.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "profiling"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:mergerag/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/api/__init__.py",
+      "summary": "Empty package marker for the FastAPI HTTP layer.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/app.py",
+      "type": "file",
+      "name": "app.py",
+      "filePath": "mergerag/api/app.py",
+      "summary": "FastAPI application factory that wires the embedder, LLM, run store, and Chroma client via lifespan and mounts the query, ingest, collections, and runs routers.",
+      "tags": [
+        "entry-point",
+        "api",
+        "fastapi",
+        "bootstrap",
+        "tested"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses async lifespan context manager to initialise heavy adapters once at startup and attach them to app.state."
+    },
+    {
+      "id": "file:mergerag/api/chroma.py",
+      "type": "file",
+      "name": "chroma.py",
+      "filePath": "mergerag/api/chroma.py",
+      "summary": "Thin factory selecting between a persistent or ephemeral Chroma client based on configured persist path.",
+      "tags": [
+        "factory",
+        "api",
+        "chromadb"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/config.py",
+      "type": "file",
+      "name": "config.py",
+      "filePath": "mergerag/api/config.py",
+      "summary": "Pydantic settings model exposing tunable pipeline defaults (top_n/top_k, retriever, models) and Chroma/run-store paths via environment variables, cached per-process.",
+      "tags": [
+        "config",
+        "settings",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/deps.py",
+      "type": "file",
+      "name": "deps.py",
+      "filePath": "mergerag/api/deps.py",
+      "summary": "FastAPI dependency providers for embedder, LLM, Chroma client, and settings, plus the get_pipeline helper that resolves request params, caches HybridRetriever instances per collection, and constructs MergeRAGPipeline.",
+      "tags": [
+        "api",
+        "dependency-injection",
+        "factory",
+        "pipeline"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses a module-level _HYBRID_CACHE dict to memoize HybridRetriever instances keyed by (collection, persist_path), which avoids rebuilding the BM25 index on every request."
+    },
+    {
+      "id": "file:mergerag/api/routes/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "mergerag/api/routes/__init__.py",
+      "summary": "Empty package marker for the FastAPI route handler modules.",
+      "tags": [
+        "entry-point",
+        "package-init",
+        "api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/routes/collections.py",
+      "type": "file",
+      "name": "collections.py",
+      "filePath": "mergerag/api/routes/collections.py",
+      "summary": "HTTP routes for listing Chroma collections and deleting them while invalidating the hybrid retriever cache.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "collections",
+        "router"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/routes/ingest.py",
+      "type": "file",
+      "name": "ingest.py",
+      "filePath": "mergerag/api/routes/ingest.py",
+      "summary": "HTTP route accepting .txt/.md uploads and streaming them through the ingestion pipeline into a Chroma collection, with size limits and hybrid-cache refresh on success.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "ingestion",
+        "upload",
+        "tested"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/api/routes/query.py",
+      "type": "file",
+      "name": "query.py",
+      "filePath": "mergerag/api/routes/query.py",
+      "summary": "Primary /query endpoint that validates the target collection, builds a MergeRAGPipeline for the chosen strategy, runs it, persists the trace to the run store, and serialises the response.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "query",
+        "router"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:mergerag/api/routes/runs.py",
+      "type": "file",
+      "name": "runs.py",
+      "filePath": "mergerag/api/routes/runs.py",
+      "summary": "Read-only HTTP routes that page through saved RunTrace summaries and fetch full run detail by id from the SQLite run store.",
+      "tags": [
+        "api-handler",
+        "fastapi",
+        "runs",
+        "router"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:mergerag/api/schemas.py",
+      "type": "file",
+      "name": "schemas.py",
+      "filePath": "mergerag/api/schemas.py",
+      "summary": "Pydantic request and response models for the API, including PipelineParams with cross-field validation and a discriminated ContextItemOut union over raw and merged chunks.",
+      "tags": [
+        "type-definition",
+        "schema",
+        "pydantic",
+        "api"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses Annotated[... , Field(discriminator='type')] to serialise the mixed final_context list as a tagged union."
+    },
+    {
+      "id": "file:mergerag/api/serializers.py",
+      "type": "file",
+      "name": "serializers.py",
+      "filePath": "mergerag/api/serializers.py",
+      "summary": "Mapping helpers that convert internal core dataclasses (Chunk, MergedChunk, MergePlan, RunTrace) into the Pydantic out-DTOs returned by the HTTP layer.",
+      "tags": [
+        "serialization",
+        "api",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "tests/__init__.py",
+      "summary": "Empty package marker for the pytest test suite.",
+      "tags": [
+        "test",
+        "package-init"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_models.py",
+      "type": "file",
+      "name": "test_models.py",
+      "filePath": "tests/test_models.py",
+      "summary": "Unit tests covering Chunk/MergedChunk/MergePlan defaults, Citation construction, RunTrace auto-generated run_id/created_at, RunScore fields, and the Query dataclass.",
+      "tags": [
+        "test",
+        "unit-test",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_utils.py",
+      "type": "file",
+      "name": "test_utils.py",
+      "filePath": "tests/test_utils.py",
+      "summary": "Unit tests for cosine_similarity covering identical, orthogonal, opposite, and zero-vector inputs.",
+      "tags": [
+        "test",
+        "unit-test",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_embedder.py",
+      "type": "file",
+      "name": "test_embedder.py",
+      "filePath": "tests/test_embedder.py",
+      "summary": "Integration-style tests verifying SentenceTransformerEmbedder returns one float vector per input text with distinct embeddings for distinct inputs.",
+      "tags": [
+        "test",
+        "embedder",
+        "integration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_llm.py",
+      "type": "file",
+      "name": "test_llm.py",
+      "filePath": "tests/test_llm.py",
+      "summary": "Unit tests with patched ollama.generate confirming OllamaLLM.complete returns the response text and forwards model name plus num_predict option.",
+      "tags": [
+        "test",
+        "unit-test",
+        "llm",
+        "mock"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_retriever.py",
+      "type": "file",
+      "name": "test_retriever.py",
+      "filePath": "tests/test_retriever.py",
+      "summary": "Tests for ChromaRetriever covering index/retrieve round trips, descending-score ordering, embedding preservation, rank assignment, and upsert behaviour.",
+      "tags": [
+        "test",
+        "retriever",
+        "integration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_run_store.py",
+      "type": "file",
+      "name": "test_run_store.py",
+      "filePath": "tests/test_run_store.py",
+      "summary": "Comprehensive SQLiteRunStore tests covering save/get round trips, embedding stripping, merge plan persistence, mixed-type final_context, pagination, and created_at preservation.",
+      "tags": [
+        "test",
+        "persistence",
+        "run-store"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/test_score_store.py",
+      "type": "file",
+      "name": "test_score_store.py",
+      "filePath": "tests/test_score_store.py",
+      "summary": "Unit tests for SQLiteScoreStore covering save/get round trip, missing-id handling, listing, overwrite-on-same-run, and scored_at preservation.",
+      "tags": [
+        "test",
+        "persistence",
+        "score-store"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_executor.py",
+      "type": "file",
+      "name": "test_executor.py",
+      "filePath": "tests/test_executor.py",
+      "summary": "Tests for the merge executor that mock the LLM and verify one MergedChunk per op, preserved source ids, correct merge_type, and per-op LLM call counts.",
+      "tags": [
+        "test",
+        "merge",
+        "executor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_planner.py",
+      "type": "file",
+      "name": "test_planner.py",
+      "filePath": "tests/test_planner.py",
+      "summary": "Tests for the merge planner verifying symmetric/asymmetric op generation, strong-chunk pairing rules, asymmetric_max_ops cap, and graceful handling of too-few chunks.",
+      "tags": [
+        "test",
+        "merge",
+        "planner"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:mergerag/api/app.py:lifespan",
+      "type": "function",
+      "name": "lifespan",
+      "filePath": "mergerag/api/app.py",
+      "lineRange": [
+        17,
+        28
+      ],
+      "summary": "FastAPI lifespan context that loads embedder, LLM, run store, and Chroma client once at startup and attaches them to app.state.",
+      "tags": [
+        "bootstrap",
+        "lifespan",
+        "fastapi"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/deps.py:get_pipeline",
+      "type": "function",
+      "name": "get_pipeline",
+      "filePath": "mergerag/api/deps.py",
+      "lineRange": [
+        52,
+        102
+      ],
+      "summary": "Resolves pipeline parameters from request body or settings defaults, selects ChromaRetriever or cached HybridRetriever, and constructs a MergeRAGPipeline.",
+      "tags": [
+        "factory",
+        "pipeline",
+        "dependency-injection"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:mergerag/api/deps.py:refresh_hybrid_cache",
+      "type": "function",
+      "name": "refresh_hybrid_cache",
+      "filePath": "mergerag/api/deps.py",
+      "lineRange": [
+        35,
+        38
+      ],
+      "summary": "Re-builds the BM25 sparse index on a cached HybridRetriever after new chunks are ingested.",
+      "tags": [
+        "cache",
+        "hybrid",
+        "ingestion"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/deps.py:clear_hybrid_cache",
+      "type": "function",
+      "name": "clear_hybrid_cache",
+      "filePath": "mergerag/api/deps.py",
+      "lineRange": [
+        41,
+        42
+      ],
+      "summary": "Drops the cached HybridRetriever entry for a (collection, persist_path) pair after collection deletion.",
+      "tags": [
+        "cache",
+        "hybrid",
+        "cleanup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/routes/ingest.py:ingest",
+      "type": "function",
+      "name": "ingest",
+      "filePath": "mergerag/api/routes/ingest.py",
+      "lineRange": [
+        30,
+        81
+      ],
+      "summary": "POST /ingest handler: validates suffix and size, writes upload to a temp file, runs ingest_document into a ChromaRetriever, and refreshes the hybrid cache.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "ingestion"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:mergerag/api/routes/ingest.py:_read_upload_limited",
+      "type": "function",
+      "name": "_read_upload_limited",
+      "filePath": "mergerag/api/routes/ingest.py",
+      "lineRange": [
+        20,
+        27
+      ],
+      "summary": "Reads at most max_bytes+1 bytes from an UploadFile and raises HTTP 413 if the limit is exceeded.",
+      "tags": [
+        "upload",
+        "validation",
+        "guard"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/routes/query.py:query",
+      "type": "function",
+      "name": "query",
+      "filePath": "mergerag/api/routes/query.py",
+      "lineRange": [
+        24,
+        60
+      ],
+      "summary": "POST /query handler: validates the target collection, builds the pipeline, executes the chosen strategy, persists the trace, and serialises the response.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:mergerag/api/routes/runs.py:list_runs",
+      "type": "function",
+      "name": "list_runs",
+      "filePath": "mergerag/api/routes/runs.py",
+      "lineRange": [
+        9,
+        28
+      ],
+      "summary": "GET /runs handler returning a paginated list of RunSummary records from the SQLite run store.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "runs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/routes/runs.py:get_run",
+      "type": "function",
+      "name": "get_run",
+      "filePath": "mergerag/api/routes/runs.py",
+      "lineRange": [
+        31,
+        37
+      ],
+      "summary": "GET /runs/{run_id} handler returning full RunDetail or 404 if the run is unknown.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "runs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/routes/collections.py:list_collections",
+      "type": "function",
+      "name": "list_collections",
+      "filePath": "mergerag/api/routes/collections.py",
+      "lineRange": [
+        11,
+        18
+      ],
+      "summary": "GET /collections handler returning name and chunk_count for every Chroma collection.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "collections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/routes/collections.py:delete_collection",
+      "type": "function",
+      "name": "delete_collection",
+      "filePath": "mergerag/api/routes/collections.py",
+      "lineRange": [
+        21,
+        36
+      ],
+      "summary": "DELETE /collections/{name} handler removing a Chroma collection and clearing its hybrid retriever cache; returns 404 if absent.",
+      "tags": [
+        "api-handler",
+        "endpoint",
+        "collections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:mergerag/api/serializers.py:run_detail_out",
+      "type": "function",
+      "name": "run_detail_out",
+      "filePath": "mergerag/api/serializers.py",
+      "lineRange": [
+        65,
+        81
+      ],
+      "summary": "Maps a RunTrace into the RunDetail response model, recursively serialising chunks, citations, merged chunks, and merge plan.",
+      "tags": [
+        "serialization",
+        "mapper"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/api/config.py:Settings",
+      "type": "class",
+      "name": "Settings",
+      "filePath": "mergerag/api/config.py",
+      "lineRange": [
+        7,
+        18
+      ],
+      "summary": "Pydantic BaseSettings holding Chroma path, run-store path, embedding/Ollama model, default pipeline knobs, and upload size limit.",
+      "tags": [
+        "settings",
+        "config",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/api/schemas.py:PipelineParams",
+      "type": "class",
+      "name": "PipelineParams",
+      "filePath": "mergerag/api/schemas.py",
+      "lineRange": [
+        9,
+        23
+      ],
+      "summary": "Optional pipeline parameter overrides for the query endpoint, with cross-field validation ensuring top_k and strong_k stay within top_n.",
+      "tags": [
+        "schema",
+        "validation",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/api/schemas.py:QueryRequest",
+      "type": "class",
+      "name": "QueryRequest",
+      "filePath": "mergerag/api/schemas.py",
+      "lineRange": [
+        26,
+        30
+      ],
+      "summary": "Request body for /query: query text, merge strategy, target collection, and optional PipelineParams overrides.",
+      "tags": [
+        "schema",
+        "request",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/api/schemas.py:QueryResponse",
+      "type": "class",
+      "name": "QueryResponse",
+      "filePath": "mergerag/api/schemas.py",
+      "lineRange": [
+        74,
+        84
+      ],
+      "summary": "Full /query response including answer, citations, token/latency stats, retrieved/merged chunks, final context, and the executed merge plan.",
+      "tags": [
+        "schema",
+        "response",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:mergerag/api/schemas.py:RunDetail",
+      "type": "class",
+      "name": "RunDetail",
+      "filePath": "mergerag/api/schemas.py",
+      "lineRange": [
+        108,
+        122
+      ],
+      "summary": "Full historical run detail returned by GET /runs/{run_id}, mirroring QueryResponse plus run metadata and config.",
+      "tags": [
+        "schema",
+        "response",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/query.py:POST-/query",
+      "type": "endpoint",
+      "name": "POST /query",
+      "filePath": "mergerag/api/routes/query.py",
+      "summary": "Primary RAG endpoint: runs the configured merge strategy against a Chroma collection and returns answer with citations and merge trace.",
+      "tags": [
+        "endpoint",
+        "api",
+        "query"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/ingest.py:POST-/ingest",
+      "type": "endpoint",
+      "name": "POST /ingest",
+      "filePath": "mergerag/api/routes/ingest.py",
+      "summary": "Document ingestion endpoint that accepts .txt/.md uploads, chunks and embeds them, and writes to a Chroma collection.",
+      "tags": [
+        "endpoint",
+        "api",
+        "ingestion"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/collections.py:GET-/collections",
+      "type": "endpoint",
+      "name": "GET /collections",
+      "filePath": "mergerag/api/routes/collections.py",
+      "summary": "Lists all Chroma collections with their chunk counts.",
+      "tags": [
+        "endpoint",
+        "api",
+        "collections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/collections.py:DELETE-/collections/{name}",
+      "type": "endpoint",
+      "name": "DELETE /collections/{name}",
+      "filePath": "mergerag/api/routes/collections.py",
+      "summary": "Deletes a named Chroma collection and invalidates its hybrid retriever cache entry.",
+      "tags": [
+        "endpoint",
+        "api",
+        "collections"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/runs.py:GET-/runs",
+      "type": "endpoint",
+      "name": "GET /runs",
+      "filePath": "mergerag/api/routes/runs.py",
+      "summary": "Paginated listing of saved RunTrace summaries from the SQLite run store.",
+      "tags": [
+        "endpoint",
+        "api",
+        "runs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "endpoint:mergerag/api/routes/runs.py:GET-/runs/{run_id}",
+      "type": "endpoint",
+      "name": "GET /runs/{run_id}",
+      "filePath": "mergerag/api/routes/runs.py",
+      "summary": "Returns the full RunDetail document for a single previously executed query.",
+      "tags": [
+        "endpoint",
+        "api",
+        "runs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/app/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "tests/app/__init__.py",
+      "summary": "Empty package marker that makes tests/app a Python test subpackage for the Streamlit UI helpers.",
+      "tags": [
+        "test",
+        "package-marker",
+        "barrel"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/app/test_api_client.py",
+      "type": "file",
+      "name": "test_api_client.py",
+      "filePath": "tests/app/test_api_client.py",
+      "summary": "Pytest suite verifying the Streamlit UI's HTTP client wraps requests correctly and surfaces error cases (HTTP, connection, timeout) by patching the requests library.",
+      "tags": [
+        "test",
+        "api-handler",
+        "mocking"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/app/test_helpers.py",
+      "type": "file",
+      "name": "test_helpers.py",
+      "filePath": "tests/app/test_helpers.py",
+      "summary": "Unit tests for the UI helpers covering citation stripping and exact-match scoring utilities used in the Streamlit answer display.",
+      "tags": [
+        "test",
+        "utility",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/fixtures/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "tests/fixtures/__init__.py",
+      "summary": "Empty package marker exposing tests/fixtures as an importable Python package for shared test data.",
+      "tags": [
+        "test",
+        "package-marker",
+        "fixtures"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/hotpotqa_tiny.json",
+      "type": "config",
+      "name": "hotpotqa_tiny.json",
+      "filePath": "tests/fixtures/hotpotqa_tiny.json",
+      "summary": "Tiny HotpotQA-shaped fixture (~137 lines) used by smoke-test benchmark runs to validate the pipeline without loading the full dev set.",
+      "tags": [
+        "test",
+        "fixtures",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:tests/fixtures/sample_chunks.json",
+      "type": "config",
+      "name": "sample_chunks.json",
+      "filePath": "tests/fixtures/sample_chunks.json",
+      "summary": "Small chunk fixture providing a deterministic input set for retriever and merge strategy tests.",
+      "tags": [
+        "test",
+        "fixtures",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_api.py",
+      "type": "file",
+      "name": "test_api.py",
+      "filePath": "tests/test_api.py",
+      "summary": "FastAPI integration test suite exercising the ingest, query, list-collections, runs, and delete-collection routes with mocked embedder/LLM dependencies via TestClient.",
+      "tags": [
+        "test",
+        "api-handler",
+        "integration-test"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses class-based pytest grouping (TestIngest, TestQuery, TestRuns, etc.) with fixtures for the FastAPI TestClient and shared collection names."
+    },
+    {
+      "id": "class:tests/test_api.py:TestIngest",
+      "type": "class",
+      "name": "TestIngest",
+      "filePath": "tests/test_api.py",
+      "lineRange": [
+        65,
+        114
+      ],
+      "summary": "Verifies the /ingest endpoint accepts uploads, returns chunk counts, and rejects malformed payloads.",
+      "tags": [
+        "test",
+        "api-handler",
+        "ingest"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/test_api.py:TestQuery",
+      "type": "class",
+      "name": "TestQuery",
+      "filePath": "tests/test_api.py",
+      "lineRange": [
+        121,
+        279
+      ],
+      "summary": "Exhaustively tests the /query endpoint across retriever modes, merge strategies, and error paths to ensure pipeline outputs are wired correctly into the HTTP response.",
+      "tags": [
+        "test",
+        "api-handler",
+        "pipeline"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:tests/test_api.py:TestListCollections",
+      "type": "class",
+      "name": "TestListCollections",
+      "filePath": "tests/test_api.py",
+      "lineRange": [
+        286,
+        303
+      ],
+      "summary": "Tests the collections-listing endpoint surfaces existing Chroma collections in the expected response shape.",
+      "tags": [
+        "test",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:tests/test_api.py:TestRuns",
+      "type": "class",
+      "name": "TestRuns",
+      "filePath": "tests/test_api.py",
+      "lineRange": [
+        314,
+        385
+      ],
+      "summary": "Tests the runs endpoint that exposes recorded pipeline run traces from the SQLite run store.",
+      "tags": [
+        "test",
+        "api-handler",
+        "run-store"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:tests/test_api.py:TestDeleteCollection",
+      "type": "class",
+      "name": "TestDeleteCollection",
+      "filePath": "tests/test_api.py",
+      "lineRange": [
+        388,
+        405
+      ],
+      "summary": "Tests the delete-collection endpoint removes a Chroma collection and returns the expected status.",
+      "tags": [
+        "test",
+        "api-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_asymmetric.py",
+      "type": "file",
+      "name": "test_asymmetric.py",
+      "filePath": "tests/test_asymmetric.py",
+      "summary": "Unit tests for the asymmetric merge planner verifying weak chunks bind to their nearest strong anchor and edge cases (empty inputs) produce no operations.",
+      "tags": [
+        "test",
+        "merge-strategy",
+        "asymmetric"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_benchmark.py",
+      "type": "file",
+      "name": "test_benchmark.py",
+      "filePath": "tests/test_benchmark.py",
+      "summary": "Tests for the benchmark orchestrator covering per-strategy result counts, run/score store persistence, EM scoring edge cases, failure recovery, and the active-asymmetric-only filter.",
+      "tags": [
+        "test",
+        "benchmark",
+        "evaluation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/test_chunker.py",
+      "type": "file",
+      "name": "test_chunker.py",
+      "filePath": "tests/test_chunker.py",
+      "summary": "Tests the paragraph-aware document chunker for boundary conditions: oversized paragraphs, short trailing paragraphs folded backward, deterministic IDs, and config validation.",
+      "tags": [
+        "test",
+        "ingestion",
+        "chunker"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_hybrid_retriever.py",
+      "type": "file",
+      "name": "test_hybrid_retriever.py",
+      "filePath": "tests/test_hybrid_retriever.py",
+      "summary": "Tests the BM25 sparse index, reciprocal-rank-fusion combiner, and HybridRetriever flow that fuses BM25 with dense retrieval for hybrid search.",
+      "tags": [
+        "test",
+        "retriever",
+        "hybrid-search"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/test_ingest.py",
+      "type": "file",
+      "name": "test_ingest.py",
+      "filePath": "tests/test_ingest.py",
+      "summary": "Integration tests for the ingest pipeline asserting documents are chunked, embedded, and indexed into ChromaDB with stable doc_id overrides.",
+      "tags": [
+        "test",
+        "ingestion",
+        "integration-test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_loader.py",
+      "type": "file",
+      "name": "test_loader.py",
+      "filePath": "tests/test_loader.py",
+      "summary": "Tests the document loader for txt and markdown formats: code-block stripping, HTML tag removal, doc_id defaulting and override, and unsupported extension errors.",
+      "tags": [
+        "test",
+        "ingestion",
+        "loader"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_pipeline.py",
+      "type": "file",
+      "name": "test_pipeline.py",
+      "filePath": "tests/test_pipeline.py",
+      "summary": "End-to-end pipeline tests covering top_k, symmetric, and asymmetric strategies with assertions on traces, latency, token counts, merge-LLM call caps, and citation/budget limits.",
+      "tags": [
+        "test",
+        "pipeline",
+        "integration-test"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/test_scorer.py",
+      "type": "file",
+      "name": "test_scorer.py",
+      "filePath": "tests/test_scorer.py",
+      "summary": "Unit tests for the evaluation scorer's normalize, exact-match, and F1 implementations matching SQuAD-style scoring conventions.",
+      "tags": [
+        "test",
+        "evaluation",
+        "scoring"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/test_symmetric.py",
+      "type": "file",
+      "name": "test_symmetric.py",
+      "filePath": "tests/test_symmetric.py",
+      "summary": "Unit tests for the symmetric merge planner verifying it pairs similar chunks, respects single-chunk/empty inputs, and never reuses a chunk twice.",
+      "tags": [
+        "test",
+        "merge-strategy",
+        "symmetric"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:data/hotpotqa_dev_distractor.json",
+      "type": "config",
+      "name": "hotpotqa_dev_distractor.json",
+      "filePath": "data/hotpotqa_dev_distractor.json",
+      "summary": "HotpotQA dev-set fixture with 7405 distractor-setting examples used as the primary benchmark corpus across all evaluation runs.",
+      "tags": [
+        "data",
+        "benchmark",
+        "dataset"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpot_dev_100_cot_7b.json",
+      "type": "config",
+      "name": "hotpot_dev_100_cot_7b.json",
+      "filePath": "results/hotpot_dev_100_cot_7b.json",
+      "summary": "Benchmark result artifact recording per-strategy outputs over 100 HotpotQA dev examples using the qwen2.5:7b chain-of-thought configuration.",
+      "tags": [
+        "data",
+        "benchmark-results",
+        "evaluation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpot_dev_500.json",
+      "type": "config",
+      "name": "hotpot_dev_500.json",
+      "filePath": "results/hotpot_dev_500.json",
+      "summary": "Baseline 500-example HotpotQA benchmark output recording per-strategy traces, predictions, and EM/F1 scores for the dense retriever pipeline.",
+      "tags": [
+        "data",
+        "benchmark-results",
+        "evaluation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpot_dev_500_v2.json",
+      "type": "config",
+      "name": "hotpot_dev_500_v2.json",
+      "filePath": "results/hotpot_dev_500_v2.json",
+      "summary": "Second-revision 500-example benchmark output (v2 run) capturing strategy outcomes after the symmetric concatenation fix.",
+      "tags": [
+        "data",
+        "benchmark-results",
+        "evaluation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpot_dev_500_hybrid.json",
+      "type": "config",
+      "name": "hotpot_dev_500_hybrid.json",
+      "filePath": "results/hotpot_dev_500_hybrid.json",
+      "summary": "500-example benchmark output for the HybridRetriever (BM25 + dense with RRF fusion) used to compare hybrid against dense-only retrieval.",
+      "tags": [
+        "data",
+        "benchmark-results",
+        "hybrid-search"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpot_dev_500_sym_fixed.json",
+      "type": "config",
+      "name": "hotpot_dev_500_sym_fixed.json",
+      "filePath": "results/hotpot_dev_500_sym_fixed.json",
+      "summary": "Benchmark output isolating the symmetric strategy after the concatenation-based fix to confirm the hallucination regression was eliminated.",
+      "tags": [
+        "data",
+        "benchmark-results",
+        "symmetric"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:results/hotpotqa_tiny_run1.json",
+      "type": "config",
+      "name": "hotpotqa_tiny_run1.json",
+      "filePath": "results/hotpotqa_tiny_run1.json",
+      "summary": "First smoke-test benchmark run output against the hotpotqa_tiny fixture used to validate the pipeline end-to-end.",
+      "tags": [
+        "data",
+        "smoke-test",
+        "evaluation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:results/hotpotqa_tiny_run2.json",
+      "type": "config",
+      "name": "hotpotqa_tiny_run2.json",
+      "filePath": "results/hotpotqa_tiny_run2.json",
+      "summary": "Second smoke-test benchmark run output used to verify determinism across runs.",
+      "tags": [
+        "data",
+        "smoke-test",
+        "evaluation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:results/hotpotqa_tiny_run3.json",
+      "type": "config",
+      "name": "hotpotqa_tiny_run3.json",
+      "filePath": "results/hotpotqa_tiny_run3.json",
+      "summary": "Third smoke-test benchmark run output used to verify determinism across runs.",
+      "tags": [
+        "data",
+        "smoke-test",
+        "evaluation"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Chunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergedChunk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergeOp",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergePlan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Citation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:RunTrace",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:RunScore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Query",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Chunk",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergedChunk",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergeOp",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:MergePlan",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:Citation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:RunTrace",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "class:mergerag/core/models.py:RunScore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:EmbedderPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:RetrieverPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:LLMPort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:RunStorePort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:ScoreStorePort",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:EmbedderPort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:RetrieverPort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:LLMPort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:RunStorePort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "class:mergerag/core/ports.py:ScoreStorePort",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/ports.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "function:mergerag/pipeline.py:_count_tokens",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "function:mergerag/pipeline.py:_parse_citations",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "function:mergerag/pipeline.py:_generate_answer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "function:mergerag/pipeline.py:_within_token_budget",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "class:mergerag/pipeline.py:MergeRAGPipeline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "class:mergerag/pipeline.py:MergeRAGPipeline",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/core/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/merge/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/merge/executor.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:mergerag/merge/planner.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/api_client.py",
+      "target": "class:app/api_client.py:APIError",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/api_client.py",
+      "target": "function:app/api_client.py:call_query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/api_client.py",
+      "target": "class:app/api_client.py:APIError",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/api_client.py",
+      "target": "function:app/api_client.py:call_query",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "function:app/streamlit_app.py:classify_question",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "function:app/streamlit_app.py:render_column",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "function:app/streamlit_app.py:classify_question",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "function:app/streamlit_app.py:render_column",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "file:app/api_client.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:app/streamlit_app.py",
+      "target": "file:app/helpers.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:pyproject.toml",
+      "target": "file:mergerag/pipeline.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:pyproject.toml",
+      "target": "file:app/streamlit_app.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:mergerag/pipeline.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:app/streamlit_app.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:results/benchmark_findings.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:results/benchmark_findings.md",
+      "target": "file:mergerag/pipeline.py",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:corrections.md",
+      "target": "file:mergerag/pipeline.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:mergerag/prompts/answer.txt",
+      "target": "file:mergerag/pipeline.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:mergerag/prompts/merge_asymmetric.txt",
+      "target": "file:mergerag/pipeline.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:mergerag/prompts/merge_symmetric.txt",
+      "target": "file:mergerag/pipeline.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/embedder.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/embedder.py",
+      "target": "class:mergerag/adapters/embedder.py:SentenceTransformerEmbedder",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/embedder.py",
+      "target": "class:mergerag/adapters/embedder.py:SentenceTransformerEmbedder",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/llm.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/llm.py",
+      "target": "class:mergerag/adapters/llm.py:OllamaLLM",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/llm.py",
+      "target": "class:mergerag/adapters/llm.py:OllamaLLM",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:ChromaRetriever",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:BM25Index",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:HybridRetriever",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "function:mergerag/adapters/retriever.py:rrf_fuse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:ChromaRetriever",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:BM25Index",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "class:mergerag/adapters/retriever.py:HybridRetriever",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "function:mergerag/adapters/retriever.py:rrf_fuse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "class:mergerag/adapters/run_store.py:SQLiteRunStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "class:mergerag/adapters/run_store.py:SQLiteRunStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "class:mergerag/adapters/score_store.py:SQLiteScoreStore",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "class:mergerag/adapters/score_store.py:SQLiteScoreStore",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/ingestion/__init__.py",
+      "target": "file:mergerag/ingestion/chunker.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/__init__.py",
+      "target": "file:mergerag/ingestion/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/__init__.py",
+      "target": "file:mergerag/ingestion/loader.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/chunker.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/chunker.py",
+      "target": "class:mergerag/ingestion/chunker.py:ParagraphChunker",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/ingestion/chunker.py",
+      "target": "class:mergerag/ingestion/chunker.py:ParagraphChunker",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "file:mergerag/ingestion/chunker.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "file:mergerag/ingestion/loader.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "function:mergerag/ingestion/ingest.py:ingest_document",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "function:mergerag/ingestion/ingest.py:ingest_document",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/ingestion/loader.py",
+      "target": "function:mergerag/ingestion/loader.py:load_document",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/ingestion/loader.py",
+      "target": "function:mergerag/ingestion/loader.py:load_document",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/merge/executor.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/executor.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/executor.py",
+      "target": "function:mergerag/merge/executor.py:execute",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/merge/executor.py",
+      "target": "function:mergerag/merge/executor.py:execute",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "file:mergerag/merge/strategies/asymmetric.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "file:mergerag/merge/strategies/symmetric.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "function:mergerag/merge/planner.py:plan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "function:mergerag/merge/planner.py:plan",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:mergerag/merge/planner.py:plan",
+      "target": "function:mergerag/merge/strategies/symmetric.py:pair_weak_chunks",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:mergerag/merge/planner.py:plan",
+      "target": "function:mergerag/merge/strategies/asymmetric.py:assign_to_anchors",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/merge/strategies/asymmetric.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/strategies/asymmetric.py",
+      "target": "file:mergerag/core/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/strategies/asymmetric.py",
+      "target": "function:mergerag/merge/strategies/asymmetric.py:assign_to_anchors",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/merge/strategies/asymmetric.py",
+      "target": "function:mergerag/merge/strategies/asymmetric.py:assign_to_anchors",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/merge/strategies/symmetric.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/strategies/symmetric.py",
+      "target": "file:mergerag/core/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/merge/strategies/symmetric.py",
+      "target": "function:mergerag/merge/strategies/symmetric.py:pair_weak_chunks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/merge/strategies/symmetric.py",
+      "target": "function:mergerag/merge/strategies/symmetric.py:pair_weak_chunks",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/eval/scorer.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/ingestion/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/merge/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/merge/planner.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:mergerag/pipeline.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:_ingest_corpus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:_compute_summary",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:_filter_active_asymmetric_examples",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:run_benchmark",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:_answer_for_scoring",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "function:mergerag/eval/benchmark.py:run_benchmark",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:mergerag/eval/benchmark.py:_ingest_corpus",
+      "target": "function:mergerag/ingestion/ingest.py:ingest_document",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:mergerag/eval/benchmark.py:run_benchmark",
+      "target": "function:mergerag/eval/scorer.py:f1",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/eval/scorer.py",
+      "target": "function:mergerag/eval/scorer.py:f1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/eval/scorer.py",
+      "target": "function:mergerag/eval/scorer.py:f1",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/adapters/llm.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/adapters/run_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/adapters/score_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/benchmark_cli.py",
+      "target": "function:scripts/benchmark_cli.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:scripts/benchmark_cli.py:main",
+      "target": "function:mergerag/eval/benchmark.py:run_benchmark",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/ingest_cli.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/ingest_cli.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/ingest_cli.py",
+      "target": "file:mergerag/ingestion/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/ingest_cli.py",
+      "target": "function:scripts/ingest_cli.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:scripts/ingest_cli.py:main",
+      "target": "function:mergerag/ingestion/ingest.py:ingest_document",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "file:mergerag/adapters/llm.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "file:mergerag/pipeline.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "class:scripts/profile_latency.py:StageCapture",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:scripts/profile_latency.py",
+      "target": "function:scripts/profile_latency.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/adapters/llm.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/adapters/run_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/chroma.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/routes/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/routes/collections.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/routes/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/routes/query.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:mergerag/api/routes/runs.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "file:mergerag/api/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "file:mergerag/pipeline.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "file:mergerag/api/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "file:mergerag/api/deps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:mergerag/api/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:mergerag/api/deps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:mergerag/ingestion/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "file:mergerag/api/config.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "file:mergerag/api/deps.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "file:mergerag/api/serializers.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "file:mergerag/api/serializers.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/serializers.py",
+      "target": "file:mergerag/api/schemas.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/serializers.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_models.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_utils.py",
+      "target": "file:mergerag/core/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_embedder.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_llm.py",
+      "target": "file:mergerag/adapters/llm.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_retriever.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_retriever.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_run_store.py",
+      "target": "file:mergerag/adapters/run_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_run_store.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_score_store.py",
+      "target": "file:mergerag/adapters/score_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_score_store.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_executor.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_executor.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_executor.py",
+      "target": "file:mergerag/merge/executor.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_planner.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_planner.py",
+      "target": "file:mergerag/merge/planner.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "function:mergerag/api/app.py:lifespan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:get_pipeline",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:refresh_hybrid_cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:clear_hybrid_cache",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "function:mergerag/api/routes/ingest.py:ingest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "function:mergerag/api/routes/ingest.py:_read_upload_limited",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "function:mergerag/api/routes/query.py:query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "function:mergerag/api/routes/runs.py:list_runs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "function:mergerag/api/routes/runs.py:get_run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "function:mergerag/api/routes/collections.py:list_collections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "function:mergerag/api/routes/collections.py:delete_collection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/serializers.py",
+      "target": "function:mergerag/api/serializers.py:run_detail_out",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/config.py",
+      "target": "class:mergerag/api/config.py:Settings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:PipelineParams",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:QueryRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:QueryResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:RunDetail",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "endpoint:mergerag/api/routes/query.py:POST-/query",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "endpoint:mergerag/api/routes/ingest.py:POST-/ingest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "endpoint:mergerag/api/routes/collections.py:GET-/collections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "endpoint:mergerag/api/routes/collections.py:DELETE-/collections/{name}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "endpoint:mergerag/api/routes/runs.py:GET-/runs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "endpoint:mergerag/api/routes/runs.py:GET-/runs/{run_id}",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:get_pipeline",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:refresh_hybrid_cache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/deps.py",
+      "target": "function:mergerag/api/deps.py:clear_hybrid_cache",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/config.py",
+      "target": "class:mergerag/api/config.py:Settings",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:PipelineParams",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:QueryRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:QueryResponse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/schemas.py",
+      "target": "class:mergerag/api/schemas.py:RunDetail",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/serializers.py",
+      "target": "function:mergerag/api/serializers.py:run_detail_out",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/routes/query.py",
+      "target": "function:mergerag/api/deps.py:get_pipeline",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "function:mergerag/api/deps.py:refresh_hybrid_cache",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/routes/collections.py",
+      "target": "function:mergerag/api/deps.py:clear_hybrid_cache",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/api/routes/runs.py",
+      "target": "function:mergerag/api/serializers.py:run_detail_out",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:mergerag/core/models.py",
+      "target": "file:tests/test_models.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/core/utils.py",
+      "target": "file:tests/test_utils.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/embedder.py",
+      "target": "file:tests/test_embedder.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/llm.py",
+      "target": "file:tests/test_llm.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "file:tests/test_retriever.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "file:tests/test_run_store.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "file:tests/test_score_store.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/merge/executor.py",
+      "target": "file:tests/test_executor.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/merge/planner.py",
+      "target": "file:tests/test_planner.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/app/test_api_client.py",
+      "target": "file:app/api_client.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/app/test_helpers.py",
+      "target": "file:app/helpers.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "file:mergerag/adapters/run_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "file:mergerag/api/app.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "file:mergerag/api/routes/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_asymmetric.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_asymmetric.py",
+      "target": "file:mergerag/merge/strategies/asymmetric.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_benchmark.py",
+      "target": "file:mergerag/adapters/run_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_benchmark.py",
+      "target": "file:mergerag/adapters/score_store.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_benchmark.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_benchmark.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_benchmark.py",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_chunker.py",
+      "target": "file:mergerag/ingestion/chunker.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_hybrid_retriever.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_hybrid_retriever.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_ingest.py",
+      "target": "file:mergerag/adapters/embedder.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_ingest.py",
+      "target": "file:mergerag/adapters/retriever.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_ingest.py",
+      "target": "file:mergerag/ingestion/chunker.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_ingest.py",
+      "target": "file:mergerag/ingestion/ingest.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_loader.py",
+      "target": "file:mergerag/ingestion/loader.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_pipeline.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_pipeline.py",
+      "target": "file:mergerag/core/ports.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_pipeline.py",
+      "target": "file:mergerag/pipeline.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_scorer.py",
+      "target": "file:mergerag/eval/scorer.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_symmetric.py",
+      "target": "file:mergerag/core/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_symmetric.py",
+      "target": "file:mergerag/merge/strategies/symmetric.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "class:tests/test_api.py:TestIngest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "class:tests/test_api.py:TestQuery",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "class:tests/test_api.py:TestListCollections",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "class:tests/test_api.py:TestRuns",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:tests/test_api.py",
+      "target": "class:tests/test_api.py:TestDeleteCollection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:mergerag/adapters/retriever.py",
+      "target": "file:tests/test_api.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/run_store.py",
+      "target": "file:tests/test_api.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/api/app.py",
+      "target": "file:tests/test_api.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/api/routes/ingest.py",
+      "target": "file:tests/test_api.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/merge/strategies/asymmetric.py",
+      "target": "file:tests/test_asymmetric.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/merge/strategies/symmetric.py",
+      "target": "file:tests/test_symmetric.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/score_store.py",
+      "target": "file:tests/test_benchmark.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/eval/benchmark.py",
+      "target": "file:tests/test_benchmark.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/ingestion/chunker.py",
+      "target": "file:tests/test_chunker.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/ingestion/loader.py",
+      "target": "file:tests/test_loader.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/ingestion/ingest.py",
+      "target": "file:tests/test_ingest.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/adapters/embedder.py",
+      "target": "file:tests/test_ingest.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/pipeline.py",
+      "target": "file:tests/test_pipeline.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:mergerag/eval/scorer.py",
+      "target": "file:tests/test_scorer.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:tests/fixtures/hotpotqa_tiny.json",
+      "target": "file:tests/test_benchmark.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tests/fixtures/sample_chunks.json",
+      "target": "file:tests/test_ingest.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:data/hotpotqa_dev_distractor.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:results/hotpot_dev_100_cot_7b.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpot_dev_500.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpot_dev_500_v2.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpot_dev_500_hybrid.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpot_dev_500_sym_fixed.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpotqa_tiny_run1.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpotqa_tiny_run2.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:results/hotpotqa_tiny_run3.json",
+      "target": "file:mergerag/eval/benchmark.py",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:app/api_client.py",
+      "target": "file:tests/app/test_api_client.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5,
+      "description": "Path-based pairing (deterministic)"
+    },
+    {
+      "source": "file:app/helpers.py",
+      "target": "file:tests/app/test_helpers.py",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5,
+      "description": "Path-based pairing (deterministic)"
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:core",
+      "name": "Core Domain",
+      "description": "Foundational dataclasses (Query, Chunk), port interfaces, and shared utilities that every other module depends on.",
+      "nodeIds": [
+        "file:mergerag/core/__init__.py",
+        "file:mergerag/core/models.py",
+        "file:mergerag/core/ports.py",
+        "file:mergerag/core/utils.py"
+      ]
+    },
+    {
+      "id": "layer:adapters",
+      "name": "Adapters & Infrastructure",
+      "description": "Concrete implementations of core ports: SentenceTransformer embedder, Ollama LLM client, Chroma/BM25/Hybrid retrievers, and SQLite-backed run and score stores.",
+      "nodeIds": [
+        "file:mergerag/adapters/__init__.py",
+        "file:mergerag/adapters/embedder.py",
+        "file:mergerag/adapters/llm.py",
+        "file:mergerag/adapters/retriever.py",
+        "file:mergerag/adapters/run_store.py",
+        "file:mergerag/adapters/score_store.py"
+      ]
+    },
+    {
+      "id": "layer:ingestion",
+      "name": "Ingestion Pipeline",
+      "description": "Loads HotpotQA fixtures, chunks documents, and ingests them into the vector store for downstream retrieval.",
+      "nodeIds": [
+        "file:mergerag/ingestion/__init__.py",
+        "file:mergerag/ingestion/chunker.py",
+        "file:mergerag/ingestion/ingest.py",
+        "file:mergerag/ingestion/loader.py"
+      ]
+    },
+    {
+      "id": "layer:merge",
+      "name": "Merge Pipeline",
+      "description": "Core MergeRAG orchestration: planner, executor, symmetric/asymmetric merge strategies, top-level pipeline, and the LLM prompt templates that drive merging and answering.",
+      "nodeIds": [
+        "file:mergerag/merge/__init__.py",
+        "file:mergerag/merge/executor.py",
+        "file:mergerag/merge/planner.py",
+        "file:mergerag/merge/strategies/__init__.py",
+        "file:mergerag/merge/strategies/asymmetric.py",
+        "file:mergerag/merge/strategies/symmetric.py",
+        "file:mergerag/__init__.py",
+        "file:mergerag/pipeline.py",
+        "document:mergerag/prompts/answer.txt",
+        "document:mergerag/prompts/merge_asymmetric.txt",
+        "document:mergerag/prompts/merge_symmetric.txt"
+      ]
+    },
+    {
+      "id": "layer:eval",
+      "name": "Evaluation",
+      "description": "Benchmark orchestrator and EM/F1 scoring logic used to compare top_k, symmetric, and asymmetric strategies on HotpotQA.",
+      "nodeIds": [
+        "file:mergerag/eval/__init__.py",
+        "file:mergerag/eval/benchmark.py",
+        "file:mergerag/eval/scorer.py"
+      ]
+    },
+    {
+      "id": "layer:api",
+      "name": "HTTP API",
+      "description": "FastAPI application exposing query, ingest, collections, and runs endpoints, with dependency wiring, Chroma helpers, request/response schemas, and serializers.",
+      "nodeIds": [
+        "file:mergerag/api/__init__.py",
+        "file:mergerag/api/app.py",
+        "file:mergerag/api/chroma.py",
+        "file:mergerag/api/config.py",
+        "file:mergerag/api/deps.py",
+        "file:mergerag/api/routes/__init__.py",
+        "file:mergerag/api/routes/collections.py",
+        "file:mergerag/api/routes/ingest.py",
+        "file:mergerag/api/routes/query.py",
+        "file:mergerag/api/routes/runs.py",
+        "file:mergerag/api/schemas.py",
+        "file:mergerag/api/serializers.py",
+        "endpoint:mergerag/api/routes/query.py:POST-/query",
+        "endpoint:mergerag/api/routes/ingest.py:POST-/ingest",
+        "endpoint:mergerag/api/routes/collections.py:GET-/collections",
+        "endpoint:mergerag/api/routes/collections.py:DELETE-/collections/{name}",
+        "endpoint:mergerag/api/routes/runs.py:GET-/runs",
+        "endpoint:mergerag/api/routes/runs.py:GET-/runs/{run_id}"
+      ]
+    },
+    {
+      "id": "layer:ui",
+      "name": "Streamlit Frontend",
+      "description": "Streamlit user interface, HTTP API client, and presentation helpers that let users interactively run the MergeRAG pipeline.",
+      "nodeIds": [
+        "file:app/__init__.py",
+        "file:app/api_client.py",
+        "file:app/helpers.py",
+        "file:app/streamlit_app.py"
+      ]
+    },
+    {
+      "id": "layer:scripts",
+      "name": "CLI Scripts",
+      "description": "Command-line entry points for ingesting fixtures, running benchmarks, and profiling per-stage latency.",
+      "nodeIds": [
+        "file:scripts/benchmark_cli.py",
+        "file:scripts/ingest_cli.py",
+        "file:scripts/profile_latency.py"
+      ]
+    },
+    {
+      "id": "layer:tests",
+      "name": "Tests",
+      "description": "Pytest suite covering adapters, merge strategies, ingestion, pipeline, API routes, and the Streamlit app helpers, plus shared fixtures.",
+      "nodeIds": [
+        "file:tests/__init__.py",
+        "file:tests/test_models.py",
+        "file:tests/test_utils.py",
+        "file:tests/test_embedder.py",
+        "file:tests/test_llm.py",
+        "file:tests/test_retriever.py",
+        "file:tests/test_run_store.py",
+        "file:tests/test_score_store.py",
+        "file:tests/test_executor.py",
+        "file:tests/test_planner.py",
+        "file:tests/app/__init__.py",
+        "file:tests/app/test_api_client.py",
+        "file:tests/app/test_helpers.py",
+        "file:tests/fixtures/__init__.py",
+        "config:tests/fixtures/hotpotqa_tiny.json",
+        "config:tests/fixtures/sample_chunks.json",
+        "file:tests/test_api.py",
+        "file:tests/test_asymmetric.py",
+        "file:tests/test_benchmark.py",
+        "file:tests/test_chunker.py",
+        "file:tests/test_hybrid_retriever.py",
+        "file:tests/test_ingest.py",
+        "file:tests/test_loader.py",
+        "file:tests/test_pipeline.py",
+        "file:tests/test_scorer.py",
+        "file:tests/test_symmetric.py"
+      ]
+    },
+    {
+      "id": "layer:data-and-project",
+      "name": "Data, Results & Project Configuration",
+      "description": "HotpotQA dataset, benchmark result JSONs, project documentation (README, corrections), and Python project configuration (pyproject.toml).",
+      "nodeIds": [
+        "config:data/hotpotqa_dev_distractor.json",
+        "document:results/benchmark_findings.md",
+        "config:results/hotpot_dev_100_cot_7b.json",
+        "config:results/hotpot_dev_500.json",
+        "config:results/hotpot_dev_500_v2.json",
+        "config:results/hotpot_dev_500_hybrid.json",
+        "config:results/hotpot_dev_500_sym_fixed.json",
+        "config:results/hotpotqa_tiny_run1.json",
+        "config:results/hotpotqa_tiny_run2.json",
+        "config:results/hotpotqa_tiny_run3.json",
+        "document:README.md",
+        "document:corrections.md",
+        "config:pyproject.toml"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to understand MergeRAG's core idea: individual retrieved chunks are often weak in isolation, so the system pairs or anchors them before generation to tighten the LLM's context window. The README lays out the three merge strategies (top_k, symmetric, asymmetric), the two retrievers (dense Chroma, hybrid BM25+dense), the hexagonal architecture, and the v1\u2013v4 benchmark results. Read this first to align the rest of the tour against the project's intended narrative.",
+      "nodeIds": [
+        "document:README.md",
+        "config:pyproject.toml"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Core Domain Model",
+      "description": "The whole pipeline communicates through a small set of dataclasses defined here: Query (text + embedding), Chunk and MergedChunk (the units retrieval and merging produce), MergeOp and MergePlan (a merge recipe), Citation, and RunTrace/RunScore for persistence. With 25 inbound dependencies, this file is the single most depended-on module in the codebase \u2014 every adapter, route, and test ultimately speaks this vocabulary.",
+      "nodeIds": [
+        "file:mergerag/core/models.py",
+        "file:mergerag/core/utils.py"
+      ],
+      "languageLesson": "Python dataclasses (@dataclass) give you typed records with auto-generated __init__, __repr__, and __eq__. Combined with type hints and Optional, they replace dict-shaped payloads with self-documenting structures that IDEs and type-checkers can validate."
+    },
+    {
+      "order": 3,
+      "title": "Hexagonal Ports",
+      "description": "ports.py declares the five protocol interfaces \u2014 EmbedderPort, RetrieverPort, LLMPort, RunStorePort, ScoreStorePort \u2014 that the rest of the system depends on. This is the seam that makes MergeRAG pluggable: the pipeline never imports a concrete embedder or LLM, it only asks for something that satisfies the port. Step 4 will show how the adapters fulfil these contracts.",
+      "nodeIds": [
+        "file:mergerag/core/ports.py"
+      ],
+      "languageLesson": "Python's typing.Protocol enables structural (duck) typing for static checks: any class with the right method signatures satisfies the protocol without needing to inherit from it. This is how hexagonal architecture stays idiomatic in Python instead of requiring abstract base classes."
+    },
+    {
+      "order": 4,
+      "title": "Adapters: Embedder, LLM, Stores",
+      "description": "These concrete adapters plug into the ports from Step 3. The embedder wraps SentenceTransformer (all-MiniLM-L6-v2 by default), the LLM adapter talks to a local Ollama daemon (qwen2.5:3b default), and the two SQLite-backed stores persist RunTrace and RunScore records. Each one is small and single-purpose because the port already specifies the contract.",
+      "nodeIds": [
+        "file:mergerag/adapters/embedder.py",
+        "file:mergerag/adapters/llm.py",
+        "file:mergerag/adapters/run_store.py",
+        "file:mergerag/adapters/score_store.py"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "Retrieval: Dense, BM25, and Hybrid",
+      "description": "retriever.py contains three layered adapters: ChromaRetriever for dense cosine search, BM25Index for sparse keyword scoring, and HybridRetriever which fuses both via Reciprocal Rank Fusion (RRF k=60). The hybrid path is what the README's v3 numbers measure \u2014 BM25 fixes entity recall while dense covers semantic matches. The user picks one at request time through PipelineParams.",
+      "nodeIds": [
+        "file:mergerag/adapters/retriever.py"
+      ],
+      "languageLesson": "Reciprocal Rank Fusion combines ranked lists by summing 1/(k + rank) across each source. It's hyperparameter-light (one constant k) and ignores raw scores, which lets you fuse heterogeneous retrievers (BM25 vs cosine) without calibration."
+    },
+    {
+      "order": 6,
+      "title": "Ingestion: Load, Chunk, Index",
+      "description": "Before retrieval can happen, documents must be loaded from disk, split into paragraph-sized chunks, embedded, and pushed into Chroma. loader.py strips fenced code blocks and HTML from .txt/.md inputs, chunker.py greedily merges paragraphs up to max_chars and folds short trailing pieces back, and ingest.py composes the embedder and retriever to index the result. This is the offline half of the system \u2014 query time only reads from what ingestion writes.",
+      "nodeIds": [
+        "file:mergerag/ingestion/loader.py",
+        "file:mergerag/ingestion/chunker.py",
+        "file:mergerag/ingestion/ingest.py"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "The MergeRAG Pipeline",
+      "description": "pipeline.py is the heart of the system: embed query \u2192 retrieve top_n \u2192 split strong/weak by score threshold \u2192 plan merges \u2192 execute merges \u2192 re-embed merged chunks \u2192 rerank by cosine \u2192 truncate to context budget \u2192 prompt the LLM. The same orchestrator handles all three strategies; the strategy argument only changes how the planner decides what to merge. The answer.txt prompt template tells the LLM to cite chunk IDs in brackets, which the API then parses into Citation objects.",
+      "nodeIds": [
+        "file:mergerag/pipeline.py",
+        "document:mergerag/prompts/answer.txt"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Merge Strategies: Planner and Executor",
+      "description": "The merge logic is split in two for testability. planner.py is a pure function that partitions chunks into strong vs weak by score and dispatches to a strategy module to build a MergePlan. executor.py then runs the plan: symmetric pairs are concatenated with no LLM call (the Q1 fix from the README that eliminated qwen2.5:3b hallucination), while asymmetric pairs invoke the LLM with merge_asymmetric.txt to anchor a weak chunk against a strong one. asymmetric.py caps merges via max_ops to bound latency (the Q3 fix).",
+      "nodeIds": [
+        "file:mergerag/merge/planner.py",
+        "file:mergerag/merge/executor.py",
+        "file:mergerag/merge/strategies/symmetric.py",
+        "file:mergerag/merge/strategies/asymmetric.py",
+        "document:mergerag/prompts/merge_asymmetric.txt"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "FastAPI HTTP Layer",
+      "description": "app.py is the FastAPI application factory: it builds the embedder, LLM, run store, and Chroma client once per process via a lifespan handler and mounts the four routers. deps.py provides per-request dependencies and caches HybridRetriever instances per collection (BM25 indices are expensive to build). config.py exposes tunable defaults through pydantic-settings so deployments can override models, paths, and top_n via environment variables.",
+      "nodeIds": [
+        "file:mergerag/api/app.py",
+        "file:mergerag/api/deps.py",
+        "file:mergerag/api/config.py",
+        "file:mergerag/api/chroma.py"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "HTTP Endpoints and Schemas",
+      "description": "The four routers expose the system over HTTP: POST /query runs the pipeline with caller-supplied PipelineParams and persists the trace, POST /ingest streams an upload through the ingestion pipeline, /collections lists and deletes Chroma collections (invalidating the hybrid cache), and /runs paginates the saved RunTraces. schemas.py defines the pydantic request/response DTOs (including a discriminated union for raw vs merged context items) and serializers.py maps core dataclasses to those DTOs.",
+      "nodeIds": [
+        "file:mergerag/api/routes/query.py",
+        "file:mergerag/api/routes/ingest.py",
+        "file:mergerag/api/routes/collections.py",
+        "file:mergerag/api/routes/runs.py",
+        "file:mergerag/api/schemas.py",
+        "file:mergerag/api/serializers.py"
+      ],
+      "languageLesson": "FastAPI's APIRouter lets you group endpoints by feature and mount them onto an app at startup. Combined with Depends() injection, routes stay declarative \u2014 they ask for a pipeline or settings object and FastAPI resolves it from the dependency graph."
+    },
+    {
+      "order": 11,
+      "title": "Streamlit Frontend",
+      "description": "streamlit_app.py is the user-facing surface: it renders the three strategies side-by-side, exposes sliders for every pipeline knob (top_n, top_k, retriever, asymmetric_max_ops, etc.), routes queries through a keyword-based smart classifier, and shows answer, citations, retrieved chunks, and EM score per column. It never touches the pipeline directly \u2014 api_client.py POSTs to the FastAPI server from Step 9, and helpers.py strips citation brackets and computes EM against the gold reference.",
+      "nodeIds": [
+        "file:app/streamlit_app.py",
+        "file:app/api_client.py",
+        "file:app/helpers.py"
+      ]
+    },
+    {
+      "order": 12,
+      "title": "Evaluation and Benchmarking",
+      "description": "The evaluation layer is how every claim in the README was measured. benchmark.py iterates a HotpotQA fixture, runs each configured strategy through the pipeline, scores answers with SQuAD-style EM and token-overlap F1, and persists per-strategy aggregates. benchmark_cli.py is the entry point used to produce the v1\u2013v4 result files in results/, and profile_latency.py attaches a logging handler to measure stage timings (the Q3 work that surfaced asymmetric's 26s merge stage).",
+      "nodeIds": [
+        "file:mergerag/eval/benchmark.py",
+        "file:mergerag/eval/scorer.py",
+        "file:scripts/benchmark_cli.py",
+        "file:scripts/profile_latency.py",
+        "document:results/benchmark_findings.md"
+      ]
+    }
+  ]
+}

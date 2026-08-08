@@ -207,7 +207,12 @@ The API server reads these environment variables, all optional:
 `DEFAULT_TOP_N` — candidates retrieved before merging (default: 20).  
 `DEFAULT_TOP_K` — final context window size (default: 5).  
 `DEFAULT_STRONG_K` — strong anchor count for merge planning (default: 5).  
-`DEFAULT_ASYMMETRIC_MAX_OPS` — max asymmetric merge LLM calls per query (default: 1).
+`DEFAULT_TOKEN_BUDGET` — soft token cap on `final_context` after rerank, enforced by the pipeline (default: 2048; set 0 to disable).  
+`DEFAULT_ASYMMETRIC_MAX_OPS` — max asymmetric merge LLM calls per query (default: 1).  
+`DEFAULT_RETRIEVER` — `chroma` (dense) or `hybrid` (BM25 + dense, RRF) — default retriever when the request omits it (default: `chroma`).  
+`MAX_UPLOAD_BYTES` — `/ingest` upload size cap; oversize uploads return 413 (default: 10_000_000).
+
+The FastAPI app constructs one shared `chromadb` client in `lifespan` and exposes it on `app.state.chroma_client`, so `/ingest` and `/query` always see the same collections — critical for the ephemeral (no `CHROMA_PERSIST_PATH`) case. `HybridRetriever` instances are cached per `(collection, persist_path)`; `/ingest` refreshes the cached sparse BM25 index, `/collections DELETE` clears the cache.
 
 ## Benchmark results
 

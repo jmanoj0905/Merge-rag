@@ -1,0 +1,5297 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "5c74460cfef53164089e17e2dd2e9aa7ac1f972f",
+  "generatedAt": "2026-05-21T03:32:41.269Z",
+  "files": {
+    "app/__init__.py": {
+      "filePath": "app/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "app/api_client.py": {
+      "filePath": "app/api_client.py",
+      "contentHash": "ba58439d609d7685dfa286d37420515d70d637a7b4400a03277861ee0baa7b36",
+      "functions": [
+        {
+          "name": "call_query",
+          "params": [
+            "query",
+            "strategy",
+            "collection_name",
+            "base_url",
+            "timeout",
+            "retriever",
+            "top_n",
+            "top_k",
+            "strong_k",
+            "token_budget",
+            "asymmetric_max_ops"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [
+        {
+          "name": "APIError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "imports": [
+        {
+          "source": "requests",
+          "specifiers": [
+            "requests"
+          ]
+        }
+      ],
+      "exports": [
+        "APIError",
+        "call_query"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "app/helpers.py": {
+      "filePath": "app/helpers.py",
+      "contentHash": "02c175445950828e78ffe42251236e297a77f2033ba1340c859f8939c989b57f",
+      "functions": [
+        {
+          "name": "strip_citations",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "compute_em",
+          "params": [
+            "answer",
+            "gold"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        }
+      ],
+      "exports": [
+        "strip_citations",
+        "compute_em"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "app/streamlit_app.py": {
+      "filePath": "app/streamlit_app.py",
+      "contentHash": "9fcd8f60d96dc181fcb56951bc4f58e5c40048c6e42a59c6c36e10f02887b16b",
+      "functions": [
+        {
+          "name": "_apply_defaults",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "classify_question",
+          "params": [
+            "question"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "render_column",
+          "params": [
+            "strategy",
+            "data",
+            "error",
+            "gold"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "streamlit",
+          "specifiers": [
+            "st"
+          ]
+        },
+        {
+          "source": "app.api_client",
+          "specifiers": [
+            "call_query",
+            "APIError"
+          ]
+        },
+        {
+          "source": "app.helpers",
+          "specifiers": [
+            "compute_em",
+            "strip_citations"
+          ]
+        }
+      ],
+      "exports": [
+        "_apply_defaults",
+        "classify_question",
+        "render_column"
+      ],
+      "totalLines": 251,
+      "hasStructuralAnalysis": true
+    },
+    "corrections.md": {
+      "filePath": "corrections.md",
+      "contentHash": "3343e6a5f4ab67ba96d726ce5182861ed6a74b761bc15497022a36b2546c501b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "data/hotpotqa_dev_distractor.json": {
+      "filePath": "data/hotpotqa_dev_distractor.json",
+      "contentHash": "4e9ecb5c8d3b719f624d66b60f8d56bf227f03914f5f0753d6fa1b359d7104ea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/__init__.py": {
+      "filePath": "mergerag/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/__init__.py": {
+      "filePath": "mergerag/adapters/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/embedder.py": {
+      "filePath": "mergerag/adapters/embedder.py",
+      "contentHash": "d8e95f4a46e94e9b96ed063f0b4d57e221dee755230497139b034b7b40f4cd50",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SentenceTransformerEmbedder",
+          "methods": [
+            "__init__",
+            "embed"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "sentence_transformers",
+          "specifiers": [
+            "SentenceTransformer"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort"
+          ]
+        }
+      ],
+      "exports": [
+        "SentenceTransformerEmbedder"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/llm.py": {
+      "filePath": "mergerag/adapters/llm.py",
+      "contentHash": "465ddc9b0d551d52a5ef911a57f0065286a991dfdf87f1b64a52f13b307bfa26",
+      "functions": [],
+      "classes": [
+        {
+          "name": "OllamaLLM",
+          "methods": [
+            "__init__",
+            "complete"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "imports": [
+        {
+          "source": "ollama",
+          "specifiers": [
+            "ollama"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "LLMPort"
+          ]
+        }
+      ],
+      "exports": [
+        "OllamaLLM"
+      ],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/retriever.py": {
+      "filePath": "mergerag/adapters/retriever.py",
+      "contentHash": "4704c7d977f0aa18258281e3fc61ac80166b5631fd9e2a2a95fccaa944541c2b",
+      "functions": [
+        {
+          "name": "_tokenize",
+          "params": [
+            "text"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "rrf_fuse",
+          "params": [
+            "dense",
+            "sparse",
+            "k"
+          ],
+          "returnType": "list[Chunk]",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [
+        {
+          "name": "ChromaRetriever",
+          "methods": [
+            "__init__",
+            "index",
+            "collection_count",
+            "fetch_all_chunks",
+            "retrieve"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 75
+        },
+        {
+          "name": "BM25Index",
+          "methods": [
+            "__init__",
+            "retrieve"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "HybridRetriever",
+          "methods": [
+            "__init__",
+            "_fetch_all_chunks",
+            "_build_bm25",
+            "refresh_sparse_index",
+            "index",
+            "retrieve"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 45
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "chromadb",
+          "specifiers": [
+            "chromadb"
+          ]
+        },
+        {
+          "source": "rank_bm25",
+          "specifiers": [
+            "BM25Okapi"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "Query"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "RetrieverPort"
+          ]
+        }
+      ],
+      "exports": [
+        "_tokenize",
+        "ChromaRetriever",
+        "rrf_fuse",
+        "BM25Index",
+        "HybridRetriever"
+      ],
+      "totalLines": 188,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/run_store.py": {
+      "filePath": "mergerag/adapters/run_store.py",
+      "contentHash": "6b128d4919001561b28d86248370f11612ce2224a4c4862deee59e1d9797ba16",
+      "functions": [
+        {
+          "name": "_ser_chunk",
+          "params": [
+            "c"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_ser_merged",
+          "params": [
+            "m"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_ser_context_item",
+          "params": [
+            "item"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_ser_plan",
+          "params": [
+            "plan"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_deser_chunk",
+          "params": [
+            "d"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_deser_merged",
+          "params": [
+            "d"
+          ],
+          "returnType": "MergedChunk",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_deser_context_item",
+          "params": [
+            "d"
+          ],
+          "returnType": "Chunk | MergedChunk",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_deser_plan",
+          "params": [
+            "raw"
+          ],
+          "returnType": "MergePlan | None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_row_to_trace",
+          "params": [
+            "row"
+          ],
+          "returnType": "RunTrace",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [
+        {
+          "name": "SQLiteRunStore",
+          "methods": [
+            "__init__",
+            "_connect",
+            "save",
+            "get",
+            "list_runs"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 53
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "sqlite3",
+          "specifiers": [
+            "sqlite3"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk",
+            "MergeOp",
+            "MergePlan",
+            "Citation",
+            "RunTrace"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "RunStorePort"
+          ]
+        }
+      ],
+      "exports": [
+        "_ser_chunk",
+        "_ser_merged",
+        "_ser_context_item",
+        "_ser_plan",
+        "_deser_chunk",
+        "_deser_merged",
+        "_deser_context_item",
+        "_deser_plan",
+        "_row_to_trace",
+        "SQLiteRunStore"
+      ],
+      "totalLines": 163,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/adapters/score_store.py": {
+      "filePath": "mergerag/adapters/score_store.py",
+      "contentHash": "62916dd50f9b58f5a7daf6c75db25a8c6b36b27d5420b3efadbf9b49f42a913c",
+      "functions": [],
+      "classes": [
+        {
+          "name": "SQLiteScoreStore",
+          "methods": [
+            "__init__",
+            "_connect",
+            "save",
+            "get",
+            "list_scores",
+            "_row_to_score"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "imports": [
+        {
+          "source": "sqlite3",
+          "specifiers": [
+            "sqlite3"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "RunScore"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "ScoreStorePort"
+          ]
+        }
+      ],
+      "exports": [
+        "SQLiteScoreStore"
+      ],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/__init__.py": {
+      "filePath": "mergerag/api/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/app.py": {
+      "filePath": "mergerag/api/app.py",
+      "contentHash": "370487313d5b99ef1ce30195a2ed56e26cb7d8d85163f81bbed93c820f5afaf5",
+      "functions": [
+        {
+          "name": "lifespan",
+          "params": [
+            "app"
+          ],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "asynccontextmanager"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.llm",
+          "specifiers": [
+            "OllamaLLM"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.run_store",
+          "specifiers": [
+            "SQLiteRunStore"
+          ]
+        },
+        {
+          "source": "mergerag.api.chroma",
+          "specifiers": [
+            "make_chroma_client"
+          ]
+        },
+        {
+          "source": "mergerag.api.config",
+          "specifiers": [
+            "get_settings"
+          ]
+        },
+        {
+          "source": "mergerag.api.routes",
+          "specifiers": [
+            "query_router"
+          ]
+        },
+        {
+          "source": "mergerag.api.routes",
+          "specifiers": [
+            "ingest_router"
+          ]
+        },
+        {
+          "source": "mergerag.api.routes",
+          "specifiers": [
+            "collections_router"
+          ]
+        },
+        {
+          "source": "mergerag.api.routes",
+          "specifiers": [
+            "runs_router"
+          ]
+        }
+      ],
+      "exports": [
+        "lifespan"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/chroma.py": {
+      "filePath": "mergerag/api/chroma.py",
+      "contentHash": "f184f07f975796f7675e501a4b3b93139d8ffce81f55094290a440dcfd396c5f",
+      "functions": [
+        {
+          "name": "make_chroma_client",
+          "params": [
+            "persist_path"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "chromadb",
+          "specifiers": [
+            "chromadb"
+          ]
+        }
+      ],
+      "exports": [
+        "make_chroma_client"
+      ],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/config.py": {
+      "filePath": "mergerag/api/config.py",
+      "contentHash": "acdc0c0d54db9c8ca4720d75a989b2d4f33f91c2afd9c0c8e2e50c208b6af1a0",
+      "functions": [
+        {
+          "name": "get_settings",
+          "params": [],
+          "returnType": "Settings",
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [
+        {
+          "name": "Settings",
+          "methods": [],
+          "properties": [
+            "chroma_persist_path",
+            "run_store_path",
+            "embedding_model",
+            "ollama_model",
+            "default_top_n",
+            "default_top_k",
+            "default_strong_k",
+            "default_token_budget",
+            "default_asymmetric_max_ops",
+            "default_retriever",
+            "max_upload_bytes"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "functools",
+          "specifiers": [
+            "lru_cache"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic_settings",
+          "specifiers": [
+            "BaseSettings"
+          ]
+        }
+      ],
+      "exports": [
+        "Settings",
+        "get_settings"
+      ],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/deps.py": {
+      "filePath": "mergerag/api/deps.py",
+      "contentHash": "f5b9e7b2a3a0609da971c0fdffc31ff655109e775038b9ce84f6545ab46c789a",
+      "functions": [
+        {
+          "name": "get_embedder",
+          "params": [
+            "request"
+          ],
+          "returnType": "EmbedderPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "get_llm",
+          "params": [
+            "request"
+          ],
+          "returnType": "LLMPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "get_settings_dep",
+          "params": [],
+          "returnType": "Settings",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "get_chroma_client",
+          "params": [
+            "request"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "refresh_hybrid_cache",
+          "params": [
+            "collection_name",
+            "persist_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "clear_hybrid_cache",
+          "params": [
+            "collection_name",
+            "persist_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_validate_resolved_params",
+          "params": [
+            "top_n",
+            "top_k",
+            "strong_k"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "get_pipeline",
+          "params": [
+            "collection_name",
+            "params",
+            "request",
+            "settings"
+          ],
+          "returnType": "MergeRAGPipeline",
+          "exported": true,
+          "lineCount": 51
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever",
+            "HybridRetriever"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "LLMPort",
+            "RetrieverPort"
+          ]
+        },
+        {
+          "source": "mergerag.pipeline",
+          "specifiers": [
+            "MergeRAGPipeline"
+          ]
+        },
+        {
+          "source": "mergerag.api.config",
+          "specifiers": [
+            "Settings",
+            "get_settings"
+          ]
+        },
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "PipelineParams"
+          ]
+        }
+      ],
+      "exports": [
+        "get_embedder",
+        "get_llm",
+        "get_settings_dep",
+        "get_chroma_client",
+        "refresh_hybrid_cache",
+        "clear_hybrid_cache",
+        "_validate_resolved_params",
+        "get_pipeline"
+      ],
+      "totalLines": 103,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/routes/__init__.py": {
+      "filePath": "mergerag/api/routes/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/routes/collections.py": {
+      "filePath": "mergerag/api/routes/collections.py",
+      "contentHash": "8fd68c698c5364eb9d9d19665b3fb417eb57f05f0b42b4b629e55589019a6dd1",
+      "functions": [
+        {
+          "name": "list_collections",
+          "params": [
+            "request"
+          ],
+          "returnType": "list[CollectionInfo]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "delete_collection",
+          "params": [
+            "name",
+            "request",
+            "settings"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "chromadb.errors",
+          "specifiers": [
+            "ChromaNotFoundError"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "source": "mergerag.api.config",
+          "specifiers": [
+            "Settings"
+          ]
+        },
+        {
+          "source": "mergerag.api.deps",
+          "specifiers": [
+            "clear_hybrid_cache",
+            "get_chroma_client",
+            "get_settings_dep"
+          ]
+        },
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "CollectionInfo"
+          ]
+        }
+      ],
+      "exports": [
+        "list_collections",
+        "delete_collection"
+      ],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/routes/ingest.py": {
+      "filePath": "mergerag/api/routes/ingest.py",
+      "contentHash": "3000cb739372aa4798c0b6775f59a1adc715e70b947e7d00963d830a16913cf1",
+      "functions": [
+        {
+          "name": "_read_upload_limited",
+          "params": [
+            "file",
+            "max_bytes"
+          ],
+          "returnType": "bytes",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ingest",
+          "params": [
+            "request",
+            "file",
+            "collection_name",
+            "doc_id",
+            "settings"
+          ],
+          "returnType": "IngestResponse",
+          "exported": true,
+          "lineCount": 51
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "Form",
+            "HTTPException",
+            "Request",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        },
+        {
+          "source": "mergerag.api.config",
+          "specifiers": [
+            "Settings"
+          ]
+        },
+        {
+          "source": "mergerag.api.deps",
+          "specifiers": [
+            "get_chroma_client",
+            "get_embedder",
+            "get_settings_dep",
+            "refresh_hybrid_cache"
+          ]
+        },
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "IngestResponse"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion",
+          "specifiers": [
+            "ingest_document"
+          ]
+        }
+      ],
+      "exports": [
+        "_read_upload_limited",
+        "ingest"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/routes/query.py": {
+      "filePath": "mergerag/api/routes/query.py",
+      "contentHash": "490d5dbb683c3556f060ba5865c5f1ff6f30155f434fe0d78a1f19af2d19a944",
+      "functions": [
+        {
+          "name": "query",
+          "params": [
+            "body",
+            "request",
+            "settings"
+          ],
+          "returnType": "QueryResponse",
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "chromadb.errors",
+          "specifiers": [
+            "ChromaNotFoundError"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "Depends",
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "source": "mergerag.api.config",
+          "specifiers": [
+            "Settings"
+          ]
+        },
+        {
+          "source": "mergerag.api.deps",
+          "specifiers": [
+            "get_chroma_client",
+            "get_pipeline",
+            "get_settings_dep"
+          ]
+        },
+        {
+          "source": "mergerag.api.serializers",
+          "specifiers": [
+            "chunk_out",
+            "citation_outs",
+            "context_item_out",
+            "merge_plan_out",
+            "merged_chunk_out"
+          ]
+        },
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "QueryRequest",
+            "QueryResponse"
+          ]
+        }
+      ],
+      "exports": [
+        "query"
+      ],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/routes/runs.py": {
+      "filePath": "mergerag/api/routes/runs.py",
+      "contentHash": "9384a0a77f9798a5b9b45b2da711d39d1f9b279f805b843c688d154dd408a476",
+      "functions": [
+        {
+          "name": "list_runs",
+          "params": [
+            "request",
+            "limit",
+            "offset"
+          ],
+          "returnType": "list[RunSummary]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "get_run",
+          "params": [
+            "run_id",
+            "request"
+          ],
+          "returnType": "RunDetail",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "RunDetail",
+            "RunSummary"
+          ]
+        },
+        {
+          "source": "mergerag.api.serializers",
+          "specifiers": [
+            "run_detail_out"
+          ]
+        }
+      ],
+      "exports": [
+        "list_runs",
+        "get_run"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/schemas.py": {
+      "filePath": "mergerag/api/schemas.py",
+      "contentHash": "207de0a1fc4148f975b00eee8acbb9181b0c07d90e3314ad53e91692f4bbdcde",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PipelineParams",
+          "methods": [
+            "validate_rank_bounds"
+          ],
+          "properties": [
+            "top_n",
+            "top_k",
+            "strong_k",
+            "token_budget",
+            "asymmetric_max_ops",
+            "retriever"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "QueryRequest",
+          "methods": [],
+          "properties": [
+            "query",
+            "strategy",
+            "collection_name",
+            "params"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ChunkOut",
+          "methods": [],
+          "properties": [
+            "type",
+            "id",
+            "doc_id",
+            "text",
+            "score",
+            "rank"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "MergedChunkOut",
+          "methods": [],
+          "properties": [
+            "type",
+            "id",
+            "text",
+            "score",
+            "source_chunk_ids",
+            "merge_type"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "CitationOut",
+          "methods": [],
+          "properties": [
+            "sentence",
+            "chunk_ids"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "MergeOpOut",
+          "methods": [],
+          "properties": [
+            "type",
+            "primary_id",
+            "secondary_id"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MergePlanOut",
+          "methods": [],
+          "properties": [
+            "operations"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "QueryResponse",
+          "methods": [],
+          "properties": [
+            "query",
+            "strategy",
+            "answer",
+            "citations",
+            "token_count",
+            "latency_ms",
+            "retrieved_chunks",
+            "merged_chunks",
+            "final_context",
+            "merge_plan"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "IngestResponse",
+          "methods": [],
+          "properties": [
+            "doc_id",
+            "chunk_count",
+            "collection_name"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "CollectionInfo",
+          "methods": [],
+          "properties": [
+            "name",
+            "chunk_count"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "RunSummary",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "created_at",
+            "query",
+            "strategy",
+            "collection_name",
+            "token_count",
+            "latency_ms"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "RunDetail",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "created_at",
+            "query",
+            "strategy",
+            "collection_name",
+            "config",
+            "answer",
+            "citations",
+            "token_count",
+            "latency_ms",
+            "retrieved_chunks",
+            "merged_chunks",
+            "final_context",
+            "merge_plan"
+          ],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Annotated",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "Field",
+            "PositiveInt",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Strategy"
+          ]
+        }
+      ],
+      "exports": [
+        "PipelineParams",
+        "QueryRequest",
+        "ChunkOut",
+        "MergedChunkOut",
+        "CitationOut",
+        "MergeOpOut",
+        "MergePlanOut",
+        "QueryResponse",
+        "IngestResponse",
+        "CollectionInfo",
+        "RunSummary",
+        "RunDetail"
+      ],
+      "totalLines": 123,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/api/serializers.py": {
+      "filePath": "mergerag/api/serializers.py",
+      "contentHash": "55f774d1b5076074e297b812ea290870b0b02640ecf7a9264fc7b49534f458c2",
+      "functions": [
+        {
+          "name": "chunk_out",
+          "params": [
+            "chunk"
+          ],
+          "returnType": "ChunkOut",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "merged_chunk_out",
+          "params": [
+            "chunk"
+          ],
+          "returnType": "MergedChunkOut",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "context_item_out",
+          "params": [
+            "item"
+          ],
+          "returnType": "ContextItemOut",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "merge_plan_out",
+          "params": [
+            "plan"
+          ],
+          "returnType": "MergePlanOut | None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "citation_outs",
+          "params": [
+            "trace"
+          ],
+          "returnType": "list[CitationOut]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "run_detail_out",
+          "params": [
+            "trace"
+          ],
+          "returnType": "RunDetail",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.api.schemas",
+          "specifiers": [
+            "ChunkOut",
+            "CitationOut",
+            "ContextItemOut",
+            "MergedChunkOut",
+            "MergeOpOut",
+            "MergePlanOut",
+            "RunDetail"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk",
+            "MergePlan",
+            "RunTrace"
+          ]
+        }
+      ],
+      "exports": [
+        "chunk_out",
+        "merged_chunk_out",
+        "context_item_out",
+        "merge_plan_out",
+        "citation_outs",
+        "run_detail_out"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/core/__init__.py": {
+      "filePath": "mergerag/core/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/core/models.py": {
+      "filePath": "mergerag/core/models.py",
+      "contentHash": "4422e7402a171585b5f25fe70d00324700c1630381049641fa5797d9cc55add3",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Query",
+          "methods": [],
+          "properties": [
+            "text",
+            "embedding"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "Chunk",
+          "methods": [],
+          "properties": [
+            "id",
+            "doc_id",
+            "text",
+            "score",
+            "rank",
+            "embedding"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "MergedChunk",
+          "methods": [],
+          "properties": [
+            "id",
+            "text",
+            "score",
+            "source_chunk_ids",
+            "merge_type",
+            "embedding"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "MergeOp",
+          "methods": [],
+          "properties": [
+            "type",
+            "primary",
+            "secondary"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "MergePlan",
+          "methods": [],
+          "properties": [
+            "operations"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "Citation",
+          "methods": [],
+          "properties": [
+            "sentence",
+            "chunk_ids"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "RunTrace",
+          "methods": [],
+          "properties": [
+            "query",
+            "strategy",
+            "retrieved_chunks",
+            "merge_plan",
+            "merged_chunks",
+            "final_context",
+            "answer",
+            "citations",
+            "token_count",
+            "latency_ms",
+            "run_id",
+            "created_at",
+            "collection_name",
+            "config"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "RunScore",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "question_id",
+            "gold_answer",
+            "em",
+            "f1",
+            "scored_at"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "imports": [
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        }
+      ],
+      "exports": [
+        "Query",
+        "Chunk",
+        "MergedChunk",
+        "MergeOp",
+        "MergePlan",
+        "Citation",
+        "RunTrace",
+        "RunScore"
+      ],
+      "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/core/ports.py": {
+      "filePath": "mergerag/core/ports.py",
+      "contentHash": "306fad9642eb92cfaa80f5d034f6a4a1b4eea0ce6ea2da4cf35bc288d64a89d4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "EmbedderPort",
+          "methods": [
+            "embed"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "RetrieverPort",
+          "methods": [
+            "retrieve",
+            "index"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "LLMPort",
+          "methods": [
+            "complete"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "RunStorePort",
+          "methods": [
+            "save",
+            "get",
+            "list_runs"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "ScoreStorePort",
+          "methods": [
+            "save",
+            "get",
+            "list_scores"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "imports": [
+        {
+          "source": "abc",
+          "specifiers": [
+            "ABC",
+            "abstractmethod"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "Query",
+            "RunScore",
+            "RunTrace"
+          ]
+        }
+      ],
+      "exports": [
+        "EmbedderPort",
+        "RetrieverPort",
+        "LLMPort",
+        "RunStorePort",
+        "ScoreStorePort"
+      ],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/core/utils.py": {
+      "filePath": "mergerag/core/utils.py",
+      "contentHash": "213ab45357cca37b7538113cdc7f8e5ee151128667e36e538ece917b084475f0",
+      "functions": [
+        {
+          "name": "cosine_similarity",
+          "params": [
+            "a",
+            "b"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "numpy",
+          "specifiers": [
+            "np"
+          ]
+        }
+      ],
+      "exports": [
+        "cosine_similarity"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/eval/__init__.py": {
+      "filePath": "mergerag/eval/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/eval/benchmark.py": {
+      "filePath": "mergerag/eval/benchmark.py",
+      "contentHash": "b73c1caace97fead778968a56e38093cd882149cc17a19e390d5bd0731366929",
+      "functions": [
+        {
+          "name": "_strip_citations",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_answer_for_scoring",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_ingest_corpus",
+          "params": [
+            "examples",
+            "embedder",
+            "retriever"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_compute_summary",
+          "params": [
+            "results",
+            "strategies"
+          ],
+          "returnType": "dict[str, StrategyStats]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_filter_active_asymmetric_examples",
+          "params": [
+            "examples",
+            "embedder",
+            "retriever",
+            "config"
+          ],
+          "returnType": "list[dict]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "run_benchmark",
+          "params": [
+            "config",
+            "embedder",
+            "retriever",
+            "llm",
+            "run_store",
+            "score_store"
+          ],
+          "returnType": "BenchmarkResult",
+          "exported": true,
+          "lineCount": 96
+        }
+      ],
+      "classes": [
+        {
+          "name": "BenchmarkConfig",
+          "methods": [],
+          "properties": [
+            "fixture_path",
+            "collection_name",
+            "strategies",
+            "top_n",
+            "top_k",
+            "strong_k",
+            "token_budget",
+            "asymmetric_max_ops",
+            "active_asymmetric_only",
+            "limit"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "RunResult",
+          "methods": [],
+          "properties": [
+            "run_id",
+            "question_id",
+            "question",
+            "strategy",
+            "answer",
+            "gold_answer",
+            "em",
+            "f1",
+            "latency_ms",
+            "token_count"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "StrategyStats",
+          "methods": [],
+          "properties": [
+            "em_mean",
+            "f1_mean",
+            "latency_ms_mean",
+            "token_count_mean",
+            "n"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "BenchmarkResult",
+          "methods": [],
+          "properties": [
+            "config",
+            "results",
+            "summary",
+            "ran_at"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "statistics",
+          "specifiers": [
+            "mean"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Query",
+            "RunScore",
+            "Strategy"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "LLMPort",
+            "RetrieverPort",
+            "RunStorePort",
+            "ScoreStorePort"
+          ]
+        },
+        {
+          "source": "mergerag.eval.scorer",
+          "specifiers": [
+            "exact_match",
+            "f1"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.ingest",
+          "specifiers": [
+            "ingest_document"
+          ]
+        },
+        {
+          "source": "mergerag.pipeline",
+          "specifiers": [
+            "MergeRAGPipeline"
+          ]
+        },
+        {
+          "source": "mergerag.merge",
+          "specifiers": [
+            "planner"
+          ]
+        }
+      ],
+      "exports": [
+        "_strip_citations",
+        "_answer_for_scoring",
+        "BenchmarkConfig",
+        "RunResult",
+        "StrategyStats",
+        "BenchmarkResult",
+        "_ingest_corpus",
+        "_compute_summary",
+        "_filter_active_asymmetric_examples",
+        "run_benchmark"
+      ],
+      "totalLines": 274,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/eval/scorer.py": {
+      "filePath": "mergerag/eval/scorer.py",
+      "contentHash": "71c4e21a5a6f43ededd174df6920f0b715e0b192c499b780391f7ab966b6ee00",
+      "functions": [
+        {
+          "name": "normalize",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "exact_match",
+          "params": [
+            "pred",
+            "gold"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "f1",
+          "params": [
+            "pred",
+            "gold"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "string",
+          "specifiers": [
+            "string"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "Counter"
+          ]
+        }
+      ],
+      "exports": [
+        "normalize",
+        "exact_match",
+        "f1"
+      ],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/ingestion/__init__.py": {
+      "filePath": "mergerag/ingestion/__init__.py",
+      "contentHash": "abfb2c2fe4b8b8ef2c649f2ab492c8395154839102a2e4bafdd1ecbdc8ae8bb5",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.ingestion.loader",
+          "specifiers": [
+            "load_document"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.chunker",
+          "specifiers": [
+            "ParagraphChunker"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.ingest",
+          "specifiers": [
+            "ingest_document"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/ingestion/chunker.py": {
+      "filePath": "mergerag/ingestion/chunker.py",
+      "contentHash": "ef10da2e7bfa0d1b0a74b17e8bc6661d351c75cbb4f1d94e5859046753cd5ad4",
+      "functions": [],
+      "classes": [
+        {
+          "name": "ParagraphChunker",
+          "methods": [
+            "__init__",
+            "chunk"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 51
+        }
+      ],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk"
+          ]
+        }
+      ],
+      "exports": [
+        "ParagraphChunker"
+      ],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/ingestion/ingest.py": {
+      "filePath": "mergerag/ingestion/ingest.py",
+      "contentHash": "cc98b72e8d78614e3c869b4a604e51b7fd910d230a0fb03925f2896a4876ae08",
+      "functions": [
+        {
+          "name": "ingest_document",
+          "params": [
+            "path",
+            "embedder",
+            "retriever",
+            "chunker",
+            "doc_id"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "RetrieverPort"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.chunker",
+          "specifiers": [
+            "ParagraphChunker"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.loader",
+          "specifiers": [
+            "load_document"
+          ]
+        }
+      ],
+      "exports": [
+        "ingest_document"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/ingestion/loader.py": {
+      "filePath": "mergerag/ingestion/loader.py",
+      "contentHash": "b74f7435d056c35a796477ae67299d360c7757d7492a1739840d442df9cfc411",
+      "functions": [
+        {
+          "name": "load_document",
+          "params": [
+            "path",
+            "doc_id"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        }
+      ],
+      "exports": [
+        "load_document"
+      ],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/__init__.py": {
+      "filePath": "mergerag/merge/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/executor.py": {
+      "filePath": "mergerag/merge/executor.py",
+      "contentHash": "0e57ee0a0a13e2b3b101db536a9023d07ac64ab060e89a7758fccbe4f6ea42b6",
+      "functions": [
+        {
+          "name": "_load_prompt",
+          "params": [
+            "merge_type"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_concatenate",
+          "params": [
+            "primary_text",
+            "secondary_text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "execute",
+          "params": [
+            "plan",
+            "query",
+            "llm"
+          ],
+          "returnType": "list[MergedChunk]",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "MergePlan",
+            "MergedChunk"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "LLMPort"
+          ]
+        }
+      ],
+      "exports": [
+        "_load_prompt",
+        "_concatenate",
+        "execute"
+      ],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/planner.py": {
+      "filePath": "mergerag/merge/planner.py",
+      "contentHash": "800460eaa1530f89fe566cf630625a0227d6c9f250b9ebb6c05c366d86a439c9",
+      "functions": [
+        {
+          "name": "plan",
+          "params": [
+            "chunks",
+            "strategy",
+            "strong_k",
+            "asymmetric_max_ops"
+          ],
+          "returnType": "MergePlan",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Literal"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergePlan"
+          ]
+        },
+        {
+          "source": "mergerag.merge.strategies.symmetric",
+          "specifiers": [
+            "pair_weak_chunks"
+          ]
+        },
+        {
+          "source": "mergerag.merge.strategies.asymmetric",
+          "specifiers": [
+            "assign_to_anchors"
+          ]
+        }
+      ],
+      "exports": [
+        "plan"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/strategies/__init__.py": {
+      "filePath": "mergerag/merge/strategies/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/strategies/asymmetric.py": {
+      "filePath": "mergerag/merge/strategies/asymmetric.py",
+      "contentHash": "1ca96ece0fbffb5592281f5508ad3438b1660df71d4126c48f62881d3800e29e",
+      "functions": [
+        {
+          "name": "assign_to_anchors",
+          "params": [
+            "weak",
+            "strong",
+            "same_doc_only",
+            "min_similarity",
+            "max_ops"
+          ],
+          "returnType": "list[MergeOp]",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergeOp"
+          ]
+        },
+        {
+          "source": "mergerag.core.utils",
+          "specifiers": [
+            "cosine_similarity"
+          ]
+        }
+      ],
+      "exports": [
+        "assign_to_anchors"
+      ],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/merge/strategies/symmetric.py": {
+      "filePath": "mergerag/merge/strategies/symmetric.py",
+      "contentHash": "da951fccbbfe7c766a12a515b08701df4998f9b10284abea318d84c63c2c1dd0",
+      "functions": [
+        {
+          "name": "pair_weak_chunks",
+          "params": [
+            "weak",
+            "same_doc_only",
+            "min_similarity"
+          ],
+          "returnType": "list[MergeOp]",
+          "exported": true,
+          "lineCount": 36
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergeOp"
+          ]
+        },
+        {
+          "source": "mergerag.core.utils",
+          "specifiers": [
+            "cosine_similarity"
+          ]
+        }
+      ],
+      "exports": [
+        "pair_weak_chunks"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/pipeline.py": {
+      "filePath": "mergerag/pipeline.py",
+      "contentHash": "68d4c07bc6578b70e448785105188f0e9c0d0fdad0e2cacd7187950e8d7567f2",
+      "functions": [
+        {
+          "name": "_count_tokens",
+          "params": [
+            "items"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_parse_citations",
+          "params": [
+            "answer",
+            "allowed_ids"
+          ],
+          "returnType": "list[Citation]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_generate_answer",
+          "params": [
+            "context",
+            "query",
+            "llm"
+          ],
+          "returnType": "tuple[str, list[Citation]]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_within_token_budget",
+          "params": [
+            "items",
+            "token_budget"
+          ],
+          "returnType": "list[Chunk | MergedChunk]",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [
+        {
+          "name": "MergeRAGPipeline",
+          "methods": [
+            "__init__",
+            "run"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 113
+        }
+      ],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk",
+            "MergePlan",
+            "Citation",
+            "RunTrace",
+            "Strategy",
+            "Query"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "RetrieverPort",
+            "LLMPort"
+          ]
+        },
+        {
+          "source": "mergerag.core.utils",
+          "specifiers": [
+            "cosine_similarity"
+          ]
+        },
+        {
+          "source": "mergerag.merge",
+          "specifiers": [
+            "planner",
+            "executor"
+          ]
+        }
+      ],
+      "exports": [
+        "_count_tokens",
+        "_parse_citations",
+        "_generate_answer",
+        "_within_token_budget",
+        "MergeRAGPipeline"
+      ],
+      "totalLines": 180,
+      "hasStructuralAnalysis": true
+    },
+    "mergerag/prompts/answer.txt": {
+      "filePath": "mergerag/prompts/answer.txt",
+      "contentHash": "dea826db8573d4b1bb41a478284a46d5576f4ccd6e90387c1d999152c91adad7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "mergerag/prompts/merge_asymmetric.txt": {
+      "filePath": "mergerag/prompts/merge_asymmetric.txt",
+      "contentHash": "a94f47256efd609cbea40336aa4c3c77fd7745dd0f260583e046f09eaf79e158",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "mergerag/prompts/merge_symmetric.txt": {
+      "filePath": "mergerag/prompts/merge_symmetric.txt",
+      "contentHash": "8dcf42ecd9878636fa6f70040444c70b8376615290a3b9fe53ed8d2adcd98ceb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "pyproject.toml": {
+      "filePath": "pyproject.toml",
+      "contentHash": "4124cc06f43b94c111b2662d096b9685cee947ed524e627231ad700ab92311f5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "61b8f988ac762fbc83b31d58621ec63f6a35ed6f015d392688f7973912f8918c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 271,
+      "hasStructuralAnalysis": true
+    },
+    "results/benchmark_findings.md": {
+      "filePath": "results/benchmark_findings.md",
+      "contentHash": "b76c3d4a31e88efc40640aaaa4bbb3dcc7b29f0a9186219ed28ef2b1b531c4ba",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpot_dev_100_cot_7b.json": {
+      "filePath": "results/hotpot_dev_100_cot_7b.json",
+      "contentHash": "0cba82d3a8dff1e9dd9cd5e26bdc603e3de1df28754fee0015aa69a0c48e0212",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3632,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpot_dev_500_hybrid.json": {
+      "filePath": "results/hotpot_dev_500_hybrid.json",
+      "contentHash": "a1edd4d71b700a15a90b6b2027fd3d2687ec01dfb5e73e1983cd83e3099180dd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18030,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpot_dev_500_sym_fixed.json": {
+      "filePath": "results/hotpot_dev_500_sym_fixed.json",
+      "contentHash": "4c47345767a228d68c896d2465affd342bf23e083d2c13727ec7677b038c780c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6016,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpot_dev_500_v2.json": {
+      "filePath": "results/hotpot_dev_500_v2.json",
+      "contentHash": "c0788c6ec0b9d40f769ffdb2506103c08b6d59439dafe082999ede28a8690ee8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18030,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpot_dev_500.json": {
+      "filePath": "results/hotpot_dev_500.json",
+      "contentHash": "f13d5d3212176f26c507abfb3f646a9420ecfc3ea0feec587ee7325516459cf7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18030,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpotqa_tiny_run1.json": {
+      "filePath": "results/hotpotqa_tiny_run1.json",
+      "contentHash": "456afc956128164bca33a306f67d5ece694ceced6f248368ee079c3092dea3ba",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpotqa_tiny_run2.json": {
+      "filePath": "results/hotpotqa_tiny_run2.json",
+      "contentHash": "b8c9f81b150d47ce2183a253dea392dfc8b75dc5f4d8313803c9cebfb8edf505",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "results/hotpotqa_tiny_run3.json": {
+      "filePath": "results/hotpotqa_tiny_run3.json",
+      "contentHash": "11ff7bd5d17287d973031cfa5bc86b00563f59b245ae618765b0b8e2b750ed1f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/benchmark_cli.py": {
+      "filePath": "scripts/benchmark_cli.py",
+      "contentHash": "a2348ca649bfe8b81bff6c16f02c5834233d4e8b57730814c8e8d794b9fd3901",
+      "functions": [
+        {
+          "name": "_reset_collection",
+          "params": [
+            "name",
+            "persist_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_print_summary",
+          "params": [
+            "summary"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 90
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "chromadb",
+          "specifiers": [
+            "chromadb"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.llm",
+          "specifiers": [
+            "OllamaLLM"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever",
+            "HybridRetriever"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.run_store",
+          "specifiers": [
+            "SQLiteRunStore"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.score_store",
+          "specifiers": [
+            "SQLiteScoreStore"
+          ]
+        },
+        {
+          "source": "mergerag.eval.benchmark",
+          "specifiers": [
+            "BenchmarkConfig",
+            "run_benchmark"
+          ]
+        }
+      ],
+      "exports": [
+        "_reset_collection",
+        "_print_summary",
+        "main"
+      ],
+      "totalLines": 137,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/ingest_cli.py": {
+      "filePath": "scripts/ingest_cli.py",
+      "contentHash": "f473c9cdcb56c2922b7448cc8ade9bcc7bc4765db9650b56f68a3711e230e2d4",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 41
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion",
+          "specifiers": [
+            "ingest_document"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        }
+      ],
+      "exports": [
+        "main"
+      ],
+      "totalLines": 55,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/profile_latency.py": {
+      "filePath": "scripts/profile_latency.py",
+      "contentHash": "f773c283aad27e9067790c0f1bbc241181c649f909e66b4eb328f115461b3765",
+      "functions": [
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 82
+        }
+      ],
+      "classes": [
+        {
+          "name": "StageCapture",
+          "methods": [
+            "__init__",
+            "emit"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "statistics",
+          "specifiers": [
+            "mean",
+            "median"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.llm",
+          "specifiers": [
+            "OllamaLLM"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        },
+        {
+          "source": "mergerag.pipeline",
+          "specifiers": [
+            "MergeRAGPipeline"
+          ]
+        }
+      ],
+      "exports": [
+        "StageCapture",
+        "main"
+      ],
+      "totalLines": 134,
+      "hasStructuralAnalysis": true
+    },
+    "tests/__init__.py": {
+      "filePath": "tests/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/app/__init__.py": {
+      "filePath": "tests/app/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/app/test_api_client.py": {
+      "filePath": "tests/app/test_api_client.py",
+      "contentHash": "89abbf3b518a1858665644a9ccb071d6f8fabd7a8cb5a8cb49d181cb0ac022b4",
+      "functions": [
+        {
+          "name": "_mock_response",
+          "params": [
+            "status",
+            "body"
+          ],
+          "returnType": "MagicMock",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_call_query_returns_response",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_call_query_raises_on_http_error",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_call_query_raises_on_connection_error",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_call_query_raises_on_timeout",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "patch",
+            "MagicMock"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "requests",
+          "specifiers": [
+            "req"
+          ]
+        },
+        {
+          "source": "app.api_client",
+          "specifiers": [
+            "call_query",
+            "APIError"
+          ]
+        }
+      ],
+      "exports": [
+        "_mock_response",
+        "test_call_query_returns_response",
+        "test_call_query_raises_on_http_error",
+        "test_call_query_raises_on_connection_error",
+        "test_call_query_raises_on_timeout"
+      ],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "tests/app/test_helpers.py": {
+      "filePath": "tests/app/test_helpers.py",
+      "contentHash": "1b2f694f94596660d6c0bc9316e07bbc0d7271719bb73f625c44fc6a6e428915",
+      "functions": [
+        {
+          "name": "test_strip_citations_removes_bracket_ids",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_strip_citations_multiple",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_strip_citations_no_citations",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_compute_em_exact_match",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_compute_em_case_insensitive",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_compute_em_strips_whitespace",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_compute_em_no_match",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_compute_em_strips_citations_before_compare",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.helpers",
+          "specifiers": [
+            "compute_em",
+            "strip_citations"
+          ]
+        }
+      ],
+      "exports": [
+        "test_strip_citations_removes_bracket_ids",
+        "test_strip_citations_multiple",
+        "test_strip_citations_no_citations",
+        "test_compute_em_exact_match",
+        "test_compute_em_case_insensitive",
+        "test_compute_em_strips_whitespace",
+        "test_compute_em_no_match",
+        "test_compute_em_strips_citations_before_compare"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "tests/fixtures/__init__.py": {
+      "filePath": "tests/fixtures/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "tests/fixtures/hotpotqa_tiny.json": {
+      "filePath": "tests/fixtures/hotpotqa_tiny.json",
+      "contentHash": "4f911dd58585894a7be29230b7caf7ecd766a337820cc960bc95fca5d725bbcb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 138,
+      "hasStructuralAnalysis": true
+    },
+    "tests/fixtures/sample_chunks.json": {
+      "filePath": "tests/fixtures/sample_chunks.json",
+      "contentHash": "398d246f776d74a8550692e909c5012552c4aeb190e7127665fa469de4c18ee0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_api.py": {
+      "filePath": "tests/test_api.py",
+      "contentHash": "d2800bba82bed7e5a3b8e509f92ebe7437f0fd84e66ae8d916b03c0c6eb40275",
+      "functions": [
+        {
+          "name": "_make_mock_embedder",
+          "params": [],
+          "returnType": "MagicMock",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_make_mock_llm",
+          "params": [],
+          "returnType": "MagicMock",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "client",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "collection_name",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "TestIngest",
+          "methods": [
+            "test_happy_path_txt",
+            "test_happy_path_md",
+            "test_unsupported_extension_returns_422",
+            "test_explicit_doc_id",
+            "test_upload_size_limit_returns_413"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "TestQuery",
+          "methods": [
+            "_seed_collection",
+            "test_happy_path_top_k",
+            "test_happy_path_via_ingest_then_query",
+            "test_unknown_collection_returns_404",
+            "test_response_lists_are_correct_types",
+            "test_invalid_pipeline_params_return_422",
+            "test_invalid_pipeline_params_against_defaults_return_422",
+            "test_hybrid_cache_refreshes_after_ingest",
+            "test_query_runtime_failure_returns_502"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 159
+        },
+        {
+          "name": "TestListCollections",
+          "methods": [
+            "test_returns_200_and_list",
+            "test_newly_created_collection_appears"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "TestRuns",
+          "methods": [
+            "runs_client",
+            "_seed_and_query",
+            "test_list_runs_empty_initially",
+            "test_query_creates_run_record",
+            "test_get_run_by_id_returns_full_detail",
+            "test_get_nonexistent_run_returns_404"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 72
+        },
+        {
+          "name": "TestDeleteCollection",
+          "methods": [
+            "test_nonexistent_collection_returns_404",
+            "test_delete_existing_collection"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "MagicMock",
+            "patch"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "HTTPException",
+            "UploadFile"
+          ]
+        },
+        {
+          "source": "fastapi.testclient",
+          "specifiers": [
+            "TestClient"
+          ]
+        },
+        {
+          "source": "mergerag.api.app",
+          "specifiers": [
+            "app"
+          ]
+        },
+        {
+          "source": "mergerag.api.routes.ingest",
+          "specifiers": [
+            "_read_upload_limited"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_mock_embedder",
+        "_make_mock_llm",
+        "client",
+        "collection_name",
+        "TestIngest",
+        "TestQuery",
+        "TestListCollections",
+        "TestRuns",
+        "TestDeleteCollection"
+      ],
+      "totalLines": 406,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_asymmetric.py": {
+      "filePath": "tests/test_asymmetric.py",
+      "contentHash": "65572391065244b49a0be692a2918e3ff3b8a7f8f5ffed2025603b07b724b08c",
+      "functions": [
+        {
+          "name": "_chunk",
+          "params": [
+            "id_",
+            "emb",
+            "rank"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_weak_assigned_to_nearest_anchor",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_all_ops_are_asymmetric_type",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_empty_weak_returns_no_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_empty_strong_returns_no_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_each_weak_chunk_gets_one_op",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk"
+          ]
+        },
+        {
+          "source": "mergerag.merge.strategies.asymmetric",
+          "specifiers": [
+            "assign_to_anchors"
+          ]
+        }
+      ],
+      "exports": [
+        "_chunk",
+        "test_weak_assigned_to_nearest_anchor",
+        "test_all_ops_are_asymmetric_type",
+        "test_empty_weak_returns_no_ops",
+        "test_empty_strong_returns_no_ops",
+        "test_each_weak_chunk_gets_one_op"
+      ],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_benchmark.py": {
+      "filePath": "tests/test_benchmark.py",
+      "contentHash": "7f23a0d2cbc5a0f80aa9a15590f18c5d091ce4c776e2e4c9e80077bd07a5caad",
+      "functions": [
+        {
+          "name": "_write_fixture",
+          "params": [
+            "data"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_mock_embedder",
+          "params": [],
+          "returnType": "EmbedderPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_mock_retriever",
+          "params": [],
+          "returnType": "RetrieverPort",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_mock_retriever_with_one_active_asymmetric_merge",
+          "params": [],
+          "returnType": "RetrieverPort",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_mock_llm",
+          "params": [
+            "answer"
+          ],
+          "returnType": "LLMPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_make_stores",
+          "params": [],
+          "returnType": "tuple[SQLiteRunStore, SQLiteScoreStore]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_run_benchmark_returns_one_result_per_strategy_per_example",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_run_benchmark_stores_runs_in_run_store",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_run_benchmark_stores_scores_in_score_store",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_run_benchmark_summary_has_all_strategy_keys",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_run_benchmark_exact_answer_gives_em_1",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_run_benchmark_scores_answer_accidentally_wrapped_in_brackets",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_run_benchmark_scores_answer_encoded_like_chunk_id",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_run_benchmark_wrong_answer_gives_em_0",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_run_benchmark_failed_run_records_zero_scores_and_continues",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_run_benchmark_can_keep_only_active_asymmetric_merge_examples",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "MagicMock"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "LLMPort",
+            "RetrieverPort"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.run_store",
+          "specifiers": [
+            "SQLiteRunStore"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.score_store",
+          "specifiers": [
+            "SQLiteScoreStore"
+          ]
+        },
+        {
+          "source": "mergerag.eval.benchmark",
+          "specifiers": [
+            "BenchmarkConfig",
+            "run_benchmark"
+          ]
+        }
+      ],
+      "exports": [
+        "_write_fixture",
+        "_mock_embedder",
+        "_mock_retriever",
+        "_mock_retriever_with_one_active_asymmetric_merge",
+        "_mock_llm",
+        "_make_stores",
+        "test_run_benchmark_returns_one_result_per_strategy_per_example",
+        "test_run_benchmark_stores_runs_in_run_store",
+        "test_run_benchmark_stores_scores_in_score_store",
+        "test_run_benchmark_summary_has_all_strategy_keys",
+        "test_run_benchmark_exact_answer_gives_em_1",
+        "test_run_benchmark_scores_answer_accidentally_wrapped_in_brackets",
+        "test_run_benchmark_scores_answer_encoded_like_chunk_id",
+        "test_run_benchmark_wrong_answer_gives_em_0",
+        "test_run_benchmark_failed_run_records_zero_scores_and_continues",
+        "test_run_benchmark_can_keep_only_active_asymmetric_merge_examples"
+      ],
+      "totalLines": 235,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_chunker.py": {
+      "filePath": "tests/test_chunker.py",
+      "contentHash": "bdb37b929144aa893f5bd80de1600cd925b13cc0c5f9e0b7a2a67dc788352b42",
+      "functions": [
+        {
+          "name": "test_single_paragraph_under_max_chars",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_two_paragraphs_exceeding_max_chars_become_two_chunks",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_short_trailing_paragraph_folded_into_previous",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_very_long_single_paragraph_emitted_as_one_chunk",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_chunk_ids_are_deterministic",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_chunk_defaults",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_chunk_doc_id_set_correctly",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_invalid_config_min_chars_exceeds_max_chars",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.chunker",
+          "specifiers": [
+            "ParagraphChunker"
+          ]
+        }
+      ],
+      "exports": [
+        "test_single_paragraph_under_max_chars",
+        "test_two_paragraphs_exceeding_max_chars_become_two_chunks",
+        "test_short_trailing_paragraph_folded_into_previous",
+        "test_very_long_single_paragraph_emitted_as_one_chunk",
+        "test_chunk_ids_are_deterministic",
+        "test_chunk_defaults",
+        "test_chunk_doc_id_set_correctly",
+        "test_invalid_config_min_chars_exceeds_max_chars"
+      ],
+      "totalLines": 71,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_embedder.py": {
+      "filePath": "tests/test_embedder.py",
+      "contentHash": "d00349167d737d5986b80aa250ee8747a819a1719bec0416a037ac0bb69172b2",
+      "functions": [
+        {
+          "name": "test_embed_returns_one_vector_per_text",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_embed_vectors_have_nonzero_length",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_embed_returns_floats",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_different_texts_produce_different_embeddings",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        }
+      ],
+      "exports": [
+        "test_embed_returns_one_vector_per_text",
+        "test_embed_vectors_have_nonzero_length",
+        "test_embed_returns_floats",
+        "test_different_texts_produce_different_embeddings"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_executor.py": {
+      "filePath": "tests/test_executor.py",
+      "contentHash": "3957a9257f97360b1088ddd44a76eb7544027f218a6e344691a4173476e15118",
+      "functions": [
+        {
+          "name": "_chunk",
+          "params": [
+            "id_"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_mock_llm",
+          "params": [
+            "response"
+          ],
+          "returnType": "LLMPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_execute_returns_one_merged_chunk_per_op",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_merged_chunk_preserves_source_ids",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_merged_chunk_has_correct_type",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_llm_called_once_per_op",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_empty_plan_returns_empty_list",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "MagicMock"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergeOp",
+            "MergePlan"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "LLMPort"
+          ]
+        },
+        {
+          "source": "mergerag.merge.executor",
+          "specifiers": [
+            "execute"
+          ]
+        }
+      ],
+      "exports": [
+        "_chunk",
+        "_mock_llm",
+        "test_execute_returns_one_merged_chunk_per_op",
+        "test_merged_chunk_preserves_source_ids",
+        "test_merged_chunk_has_correct_type",
+        "test_llm_called_once_per_op",
+        "test_empty_plan_returns_empty_list"
+      ],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_hybrid_retriever.py": {
+      "filePath": "tests/test_hybrid_retriever.py",
+      "contentHash": "b2653066d605038b5fc92792344f63e71bbec1be77c073dd21a0df7c868355ab",
+      "functions": [
+        {
+          "name": "_chunk",
+          "params": [
+            "id_",
+            "rank"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_rrf_fuse_chunk_in_both_lists_ranks_first",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_rrf_fuse_empty_sparse_returns_dense_order",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_rrf_fuse_sets_rank_sequentially",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_rrf_fuse_sets_score_to_rrf_value",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_rrf_fuse_does_not_mutate_inputs",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_bm25_index_retrieves_by_keyword",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_bm25_index_empty_corpus_returns_empty",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_bm25_index_top_n_limits_results",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_bm25_index_rare_term_ranks_highest",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_bm25_index_normalizes_punctuation",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_hybrid_retriever_rebuilds_bm25_after_index",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_hybrid_retriever_surfaces_keyword_match",
+          "params": [],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "test_hybrid_retriever_returns_top_n_results",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_hybrid_retriever_results_have_sequential_ranks",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "Query"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "rrf_fuse",
+            "BM25Index",
+            "HybridRetriever"
+          ]
+        }
+      ],
+      "exports": [
+        "_chunk",
+        "test_rrf_fuse_chunk_in_both_lists_ranks_first",
+        "test_rrf_fuse_empty_sparse_returns_dense_order",
+        "test_rrf_fuse_sets_rank_sequentially",
+        "test_rrf_fuse_sets_score_to_rrf_value",
+        "test_rrf_fuse_does_not_mutate_inputs",
+        "test_bm25_index_retrieves_by_keyword",
+        "test_bm25_index_empty_corpus_returns_empty",
+        "test_bm25_index_top_n_limits_results",
+        "test_bm25_index_rare_term_ranks_highest",
+        "test_bm25_index_normalizes_punctuation",
+        "test_hybrid_retriever_rebuilds_bm25_after_index",
+        "test_hybrid_retriever_surfaces_keyword_match",
+        "test_hybrid_retriever_returns_top_n_results",
+        "test_hybrid_retriever_results_have_sequential_ranks"
+      ],
+      "totalLines": 163,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_ingest.py": {
+      "filePath": "tests/test_ingest.py",
+      "contentHash": "9c7630258d89fe2c4d5f8b6638f74c562ba3fadcb79dcb24f5ee347a9c69666d",
+      "functions": [
+        {
+          "name": "_make_three_paragraph_doc",
+          "params": [
+            "tmp_path"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_ingest_document_returns_chunk_count",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_ingest_document_indexes_chunks_in_chromadb",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_ingest_document_respects_doc_id_override",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.embedder",
+          "specifiers": [
+            "SentenceTransformerEmbedder"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.chunker",
+          "specifiers": [
+            "ParagraphChunker"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.ingest",
+          "specifiers": [
+            "ingest_document"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_three_paragraph_doc",
+        "test_ingest_document_returns_chunk_count",
+        "test_ingest_document_indexes_chunks_in_chromadb",
+        "test_ingest_document_respects_doc_id_override"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_llm.py": {
+      "filePath": "tests/test_llm.py",
+      "contentHash": "ed50c3d11d2942bfaa54b61df2f6b43e5f0f6c8ed2153bd20fcf5c2394afe425",
+      "functions": [
+        {
+          "name": "test_complete_returns_string",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_complete_passes_model_name",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_complete_passes_max_tokens",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "patch",
+            "MagicMock"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.llm",
+          "specifiers": [
+            "OllamaLLM"
+          ]
+        }
+      ],
+      "exports": [
+        "test_complete_returns_string",
+        "test_complete_passes_model_name",
+        "test_complete_passes_max_tokens"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_loader.py": {
+      "filePath": "tests/test_loader.py",
+      "contentHash": "bd0f09ab85647bc56ad2090e94fb7a1cbc4d6f08a7dcca171b3db77b9104ac3d",
+      "functions": [
+        {
+          "name": "test_txt_content_returned_as_is",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_txt_doc_id_defaults_to_stem",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_md_strips_fenced_code_blocks",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_md_strips_html_tags",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_md_preserves_prose",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_doc_id_override",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_unsupported_extension_raises_value_error",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "mergerag.ingestion.loader",
+          "specifiers": [
+            "load_document"
+          ]
+        }
+      ],
+      "exports": [
+        "test_txt_content_returned_as_is",
+        "test_txt_doc_id_defaults_to_stem",
+        "test_md_strips_fenced_code_blocks",
+        "test_md_strips_html_tags",
+        "test_md_preserves_prose",
+        "test_doc_id_override",
+        "test_unsupported_extension_raises_value_error"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_models.py": {
+      "filePath": "tests/test_models.py",
+      "contentHash": "2a667b404b6f120052e724ecea5088d016ea4bc9279e1e528753cf4de42aa8a8",
+      "functions": [
+        {
+          "name": "test_chunk_defaults",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_merged_chunk_provenance",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_merge_plan_holds_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_citation_fields",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_run_trace_fields",
+          "params": [],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_make_minimal_trace",
+          "params": [],
+          "returnType": "RunTrace",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_run_trace_auto_generates_run_id",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_run_trace_each_instance_gets_unique_run_id",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_run_trace_auto_generates_created_at",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_run_trace_collection_name_defaults_empty",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_run_trace_config_defaults_empty_dict",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_run_score_fields",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_run_score_auto_generates_scored_at",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_query_holds_text_and_embedding",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "uuid",
+          "specifiers": [
+            "uuid"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk",
+            "MergeOp",
+            "MergePlan",
+            "Citation",
+            "RunTrace"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Query"
+          ]
+        }
+      ],
+      "exports": [
+        "test_chunk_defaults",
+        "test_merged_chunk_provenance",
+        "test_merge_plan_holds_ops",
+        "test_citation_fields",
+        "test_run_trace_fields",
+        "_make_minimal_trace",
+        "test_run_trace_auto_generates_run_id",
+        "test_run_trace_each_instance_gets_unique_run_id",
+        "test_run_trace_auto_generates_created_at",
+        "test_run_trace_collection_name_defaults_empty",
+        "test_run_trace_config_defaults_empty_dict",
+        "test_run_score_fields",
+        "test_run_score_auto_generates_scored_at",
+        "test_query_holds_text_and_embedding"
+      ],
+      "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_pipeline.py": {
+      "filePath": "tests/test_pipeline.py",
+      "contentHash": "6ea825700fd66ca1547730a73dd48d2fa383c7ca3b93ebf450c5dd0a8cf3c559",
+      "functions": [
+        {
+          "name": "_make_chunk",
+          "params": [
+            "id_",
+            "rank"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_make_text_chunk",
+          "params": [
+            "id_",
+            "rank",
+            "text"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_mock_embedder",
+          "params": [],
+          "returnType": "EmbedderPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_mock_retriever",
+          "params": [
+            "n"
+          ],
+          "returnType": "RetrieverPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_mock_llm",
+          "params": [],
+          "returnType": "LLMPort",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_top_k_run_returns_trace",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_symmetric_run_returns_trace_with_merges",
+          "params": [],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "test_asymmetric_run_produces_merged_chunks",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "test_asymmetric_run_defaults_to_one_merge_llm_call",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_asymmetric_run_can_raise_merge_llm_call_cap",
+          "params": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_run_trace_has_latency",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_run_trace_token_count_is_nonzero",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_run_populates_collection_name",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_run_populates_config_with_pipeline_params",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_top_k_respects_token_budget",
+          "params": [],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "test_citations_are_limited_to_final_context_ids",
+          "params": [],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "unittest.mock",
+          "specifiers": [
+            "MagicMock"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk"
+          ]
+        },
+        {
+          "source": "mergerag.core.ports",
+          "specifiers": [
+            "EmbedderPort",
+            "RetrieverPort",
+            "LLMPort"
+          ]
+        },
+        {
+          "source": "mergerag.pipeline",
+          "specifiers": [
+            "MergeRAGPipeline"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_chunk",
+        "_make_text_chunk",
+        "_mock_embedder",
+        "_mock_retriever",
+        "_mock_llm",
+        "test_top_k_run_returns_trace",
+        "test_symmetric_run_returns_trace_with_merges",
+        "test_asymmetric_run_produces_merged_chunks",
+        "test_asymmetric_run_defaults_to_one_merge_llm_call",
+        "test_asymmetric_run_can_raise_merge_llm_call_cap",
+        "test_run_trace_has_latency",
+        "test_run_trace_token_count_is_nonzero",
+        "test_run_populates_collection_name",
+        "test_run_populates_config_with_pipeline_params",
+        "test_top_k_respects_token_budget",
+        "test_citations_are_limited_to_final_context_ids"
+      ],
+      "totalLines": 190,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_planner.py": {
+      "filePath": "tests/test_planner.py",
+      "contentHash": "8c40553689acf11cdbfffd66caa4c08d35045f924a4a425f729976e5da03eb0d",
+      "functions": [
+        {
+          "name": "_chunk",
+          "params": [
+            "id_",
+            "rank",
+            "emb"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_chunks",
+          "params": [
+            "n"
+          ],
+          "returnType": "list[Chunk]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_symmetric_plan_produces_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_asymmetric_plan_produces_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_strong_chunks_not_in_symmetric_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_asymmetric_primary_is_strong_chunk",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_asymmetric_plan_respects_max_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_asymmetric_plan_allows_zero_max_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_fewer_chunks_than_strong_k_returns_empty_plan",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk"
+          ]
+        },
+        {
+          "source": "mergerag.merge.planner",
+          "specifiers": [
+            "plan"
+          ]
+        }
+      ],
+      "exports": [
+        "_chunk",
+        "_chunks",
+        "test_symmetric_plan_produces_ops",
+        "test_asymmetric_plan_produces_ops",
+        "test_strong_chunks_not_in_symmetric_ops",
+        "test_asymmetric_primary_is_strong_chunk",
+        "test_asymmetric_plan_respects_max_ops",
+        "test_asymmetric_plan_allows_zero_max_ops",
+        "test_fewer_chunks_than_strong_k_returns_empty_plan"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_retriever.py": {
+      "filePath": "tests/test_retriever.py",
+      "contentHash": "918027e63bcf747f30167ef2eedd6f7989f5e2cc4d1abfc655c16a2611b84782",
+      "functions": [
+        {
+          "name": "_make_retriever",
+          "params": [],
+          "returnType": "ChromaRetriever",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_chunks_and_embeddings",
+          "params": [],
+          "returnType": "tuple[list[Chunk], list[list[float]]]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_index_and_retrieve_returns_chunks",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_retrieve_sorted_by_score_descending",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_retrieved_chunks_have_embeddings",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_retrieved_chunks_have_correct_rank",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_index_upserts_existing_chunk_ids",
+          "params": [],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "Query"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.retriever",
+          "specifiers": [
+            "ChromaRetriever"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_retriever",
+        "_chunks_and_embeddings",
+        "test_index_and_retrieve_returns_chunks",
+        "test_retrieve_sorted_by_score_descending",
+        "test_retrieved_chunks_have_embeddings",
+        "test_retrieved_chunks_have_correct_rank",
+        "test_index_upserts_existing_chunk_ids"
+      ],
+      "totalLines": 68,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_run_store.py": {
+      "filePath": "tests/test_run_store.py",
+      "contentHash": "fa17d7b61ee447b4b36ccdc658395fa6c495724c3c30a10d8a3ec527d4c0cfb1",
+      "functions": [
+        {
+          "name": "_make_trace",
+          "params": [
+            "**overrides"
+          ],
+          "returnType": "RunTrace",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "store",
+          "params": [
+            "tmp_path"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_save_and_get_scalar_fields",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "test_get_nonexistent_returns_none",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_round_trip_preserves_retrieved_chunks",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "test_round_trip_strips_embeddings",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_round_trip_preserves_citations",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_round_trip_null_merge_plan",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_round_trip_with_merge_plan",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "test_round_trip_final_context_mixed_types",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_round_trip_preserves_created_at",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "test_list_runs_returns_all_saved",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_list_runs_ordered_newest_first",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_list_runs_pagination",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "test_list_runs_empty",
+          "params": [
+            "store"
+          ],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime",
+            "timezone",
+            "timedelta"
+          ]
+        },
+        {
+          "source": "pytest",
+          "specifiers": [
+            "pytest"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.run_store",
+          "specifiers": [
+            "SQLiteRunStore"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk",
+            "MergedChunk",
+            "MergePlan",
+            "MergeOp",
+            "Citation",
+            "RunTrace"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_trace",
+        "store",
+        "test_save_and_get_scalar_fields",
+        "test_get_nonexistent_returns_none",
+        "test_round_trip_preserves_retrieved_chunks",
+        "test_round_trip_strips_embeddings",
+        "test_round_trip_preserves_citations",
+        "test_round_trip_null_merge_plan",
+        "test_round_trip_with_merge_plan",
+        "test_round_trip_final_context_mixed_types",
+        "test_round_trip_preserves_created_at",
+        "test_list_runs_returns_all_saved",
+        "test_list_runs_ordered_newest_first",
+        "test_list_runs_pagination",
+        "test_list_runs_empty"
+      ],
+      "totalLines": 181,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_score_store.py": {
+      "filePath": "tests/test_score_store.py",
+      "contentHash": "278cff584fc79ed27e8ac8b61a3de5d8ddad5d9a8ce5a853868f68abae0b1b0b",
+      "functions": [
+        {
+          "name": "_make_store",
+          "params": [],
+          "returnType": "SQLiteScoreStore",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_make_score",
+          "params": [
+            "**kwargs"
+          ],
+          "returnType": "RunScore",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_save_and_get_round_trip",
+          "params": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "test_get_missing_returns_none",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_list_scores_returns_all_saved",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_overwrite_on_same_run_id",
+          "params": [],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "test_gold_answer_preserved",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_question_id_preserved",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "test_scored_at_preserved",
+          "params": [],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "tempfile",
+          "specifiers": [
+            "tempfile"
+          ]
+        },
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "RunScore"
+          ]
+        },
+        {
+          "source": "mergerag.adapters.score_store",
+          "specifiers": [
+            "SQLiteScoreStore"
+          ]
+        }
+      ],
+      "exports": [
+        "_make_store",
+        "_make_score",
+        "test_save_and_get_round_trip",
+        "test_get_missing_returns_none",
+        "test_list_scores_returns_all_saved",
+        "test_overwrite_on_same_run_id",
+        "test_gold_answer_preserved",
+        "test_question_id_preserved",
+        "test_scored_at_preserved"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_scorer.py": {
+      "filePath": "tests/test_scorer.py",
+      "contentHash": "9ffb3729001ae092eac6549fd31bb2f48eb5ceae085eeebffe1483fa901c1de0",
+      "functions": [
+        {
+          "name": "test_normalize_lowercases",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_normalize_strips_articles",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_normalize_strips_punctuation",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_normalize_collapses_whitespace",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_exact_match_identical",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_exact_match_case_insensitive",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_exact_match_strips_articles",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_exact_match_mismatch",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_exact_match_punctuation_ignored",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_f1_exact",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_f1_partial_overlap",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_f1_no_overlap",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_f1_both_empty",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_f1_pred_empty",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_f1_gold_empty",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.eval.scorer",
+          "specifiers": [
+            "normalize",
+            "exact_match",
+            "f1"
+          ]
+        }
+      ],
+      "exports": [
+        "test_normalize_lowercases",
+        "test_normalize_strips_articles",
+        "test_normalize_strips_punctuation",
+        "test_normalize_collapses_whitespace",
+        "test_exact_match_identical",
+        "test_exact_match_case_insensitive",
+        "test_exact_match_strips_articles",
+        "test_exact_match_mismatch",
+        "test_exact_match_punctuation_ignored",
+        "test_f1_exact",
+        "test_f1_partial_overlap",
+        "test_f1_no_overlap",
+        "test_f1_both_empty",
+        "test_f1_pred_empty",
+        "test_f1_gold_empty"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_symmetric.py": {
+      "filePath": "tests/test_symmetric.py",
+      "contentHash": "7e47db116fb471a97053d025c2f6a0e15e02d4eb79afa2d912ed191980c49f18",
+      "functions": [
+        {
+          "name": "_chunk",
+          "params": [
+            "id_",
+            "emb"
+          ],
+          "returnType": "Chunk",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_pairs_two_similar_chunks",
+          "params": [],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "test_empty_list_returns_no_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "test_single_chunk_returns_no_ops",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_all_ops_are_symmetric_type",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_no_chunk_used_twice",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.models",
+          "specifiers": [
+            "Chunk"
+          ]
+        },
+        {
+          "source": "mergerag.merge.strategies.symmetric",
+          "specifiers": [
+            "pair_weak_chunks"
+          ]
+        }
+      ],
+      "exports": [
+        "_chunk",
+        "test_pairs_two_similar_chunks",
+        "test_empty_list_returns_no_ops",
+        "test_single_chunk_returns_no_ops",
+        "test_all_ops_are_symmetric_type",
+        "test_no_chunk_used_twice"
+      ],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "tests/test_utils.py": {
+      "filePath": "tests/test_utils.py",
+      "contentHash": "6250cc5a2a2c5f32023957c8f2716bb746353d084816fcaa842d3086ec593a65",
+      "functions": [
+        {
+          "name": "test_identical_vectors",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "test_orthogonal_vectors",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_opposite_vectors",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "test_zero_vector_returns_zero",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "mergerag.core.utils",
+          "specifiers": [
+            "cosine_similarity"
+          ]
+        }
+      ],
+      "exports": [
+        "test_identical_vectors",
+        "test_orthogonal_vectors",
+        "test_opposite_vectors",
+        "test_zero_vector_returns_zero"
+      ],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    }
+  }
+}
